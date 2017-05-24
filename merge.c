@@ -15,7 +15,9 @@ void mergeSort(int *vetor, int inicio, int fim);
 void merge(int *vetor, int inicio, int meio, int fim);
 
 void main(int argc, char** argv){
-	int vetor[16] = {5, 8, 1, 14, 13, 3, 4, 7, 9, 2, 15, 6, 0, 11, 12, 10};
+
+
+    int vetor[16] = {5, 8, 1, 14, 13, 3, 4, 7, 9, 2, 15, 6, 0, 11, 12, 10};
 	int tamVetor = 16;
 
 	double tIni, tFim, tExecucao; //Controladoras de tempo
