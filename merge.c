@@ -5,7 +5,7 @@
 #include <string.h>
 #include <math.h>
 #include <mpi.h>
-
+///swedrftgyhujiko
 #define MASTER 0
 #define INICIO 1
 #define FIM 2
