@@ -1,1 +1,4 @@
-CMakeLists.txt not found in /home/elihofni/Área de Trabalho/LabParalela/TransDNA
+"C:\Program Files\JetBrains\CLion 2017.1.2\bin\cmake\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" D:\Arquivos\Documents\GitHub\TransDNA
+-- Configuring done
+-- Generating done
+-- Build files have been written to: D:/Arquivos/Documents/GitHub/TransDNA/cmake-build-debug
