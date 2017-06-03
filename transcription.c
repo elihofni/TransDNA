@@ -7,6 +7,66 @@ void initialize(char *array,int size){
 }
 
 /**
+* BIO: CODONS
+* funcao que quebra uma string em substrings
+* de tamanho 3.
+* str - String recebida pela thread.
+* Exemplo: AACCGCTCA -> AAC CGC UCA
+*/
+char** split(const char* str){
+    int size = strlen(str);
+    const int subStringSize = 3;
+    const int finalArraySize = size / subStringSize;
+
+    char temp[subStringSize + 1];
+    temp[subStringSize] = '\0';
+
+
+    /*
+     * Array que armazena as substrigns.
+     */
+    char ** finalArray = malloc(finalArraySize * sizeof(char*));
+    for (int i = 0; i < finalArraySize; i++) {
+        finalArray[i] = malloc((subStringSize + 1) * sizeof(char));
+    }
+
+    /*
+     * Iterador do array final.
+     */
+    int j = 0;
+
+    /*
+     * Iterador da string temporária.
+     */
+    int i = 0;
+
+    /*
+     * Iterador do string de entrada.
+     */
+    int k = 0;
+
+    for(i = 0; k < size; i++, k++){
+        temp[i] = str[k];
+
+        if(i == (subStringSize - 1)){
+            //Reseto o iterador da string temporária.
+            i = -1;
+
+            //atribuo a string de tamanho 3 para o vetor final.
+            int l = 0;
+            for(l = 0; l < subStringSize; l++){
+                finalArray[j][l] = temp[l];
+            }
+
+            //Incremento o index atual do vetor final.
+            j++;
+        }
+    }
+
+    return finalArray;
+}
+
+/**
 * BIO: TRANSRIÃ‡Ã‚O [DNA -> RNA]
 * Traduz uma sequencia em DNA para RNA.
 * str - String recebida pela thread..
