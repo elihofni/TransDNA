@@ -25,8 +25,9 @@ char** split(const char* str){
     /*
      * Array que armazena as substrigns.
      */
-    char ** finalArray = malloc(finalArraySize * sizeof(char*));
-    for (int i = 0; i < finalArraySize; i++) {
+    char** finalArray = malloc(finalArraySize * sizeof(char*));
+    int i = 0;
+    for (i = 0; i < finalArraySize; i++) {
         finalArray[i] = malloc((subStringSize + 1) * sizeof(char));
     }
 
@@ -38,8 +39,7 @@ char** split(const char* str){
     /*
      * Iterador da string tempor�ria.
      */
-    int i = 0;
-
+	i = 0;
     /*
      * Iterador do string de entrada.
      */
@@ -72,7 +72,7 @@ char** split(const char* str){
 * str - String recebida pela thread..
 * Exemplo: AACCGCTCA -> AACCGCUCA
 */
-char* transcription(char *chain,int size){
+char* transcription(char *chain, int size){
 	int i;
 	char *rna = malloc(sizeof(char) * size),k;
 	initialize(rna,size);
@@ -140,6 +140,46 @@ const char* aminoacids(char *in,const int size){
 	else if(in[0] == 'G' && in[1] == 'G') return "Gly";
 	//se não entrou em nenhum caso válido, o nome de retorno é sem sentido:
 	return "S/N";
+}
+
+char** translate(const char* str, int size){
+	//Traduzo a string de entrada.
+	char* transc = transcription(str, size);
+	
+	//Quebro em substring de tamanho 3.
+	char** finalArray = split(transc);
+	
+	//Para cada substring
+	int i;
+	for(i = 0; i < size; i++){
+		char* c = finalArray[i];
+		//Pego o aminoacido.
+		char* aminoacid = aminoacids(c, 3);
+		
+		int l = 0;
+        for(l = 0; l < 3; l++){
+            finalArray[i][l] = aminoacid[l];
+        }
+	}
+	
+	return finalArray;
+}
+
+int main(){
+	int n = 5;
+	char* hehehe = transcription("aaaaacggcgtagca", 15);
+	
+	printf("%s", hehehe);
+	
+	/*int i;
+	for(i = 0; i < n; i++){
+		printf("%s\n", hehehe[i]);
+	}*/
+	
+	
+	
+	
+	return 0;
 }
 
 
