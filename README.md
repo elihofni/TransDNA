@@ -51,9 +51,9 @@ Entrada
 
 Saida
 -      
-                  DNA: aaaaacggcgtagca
-    CODONS DNA: aaa aac ggc gta gca
-                   RNA: uuuuugccgcaucgu
+            DNA: aaaaacggcgtagca
+     CODONS DNA: aaa aac ggc gta gc              
+            RNA: uuuuugccgcaucgu
      CODONS RNA: uuu uug ccg cau cgu
     AMINOACIDOS: nome nome nome nome nome
 
