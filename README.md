@@ -46,16 +46,18 @@ char* func(char* strAraay);
 
 ### Exemplo de arquivos
 Entrada
-- DNA: aaaaacggcgtagca
+-
+    DNA: aaaaacggcgtagca
 
 Saida
--         DNA: aaaaacggcgtagca
--  CODONS DNA: aaa aac ggc gta gca
--         RNA: uuuuugccgcaucgu
--  CODONS RNA: uuu uug ccg cau cgu
-- AMINOACIDOS: nome nome nome nome nome
+-      
+                  DNA: aaaaacggcgtagca
+    CODONS DNA: aaa aac ggc gta gca
+                   RNA: uuuuugccgcaucgu
+     CODONS RNA: uuu uug ccg cau cgu
+    AMINOACIDOS: nome nome nome nome nome
 
 ### Compilando e executando
 - Ir até a raíz do projeto via terminal
-- Compilar `mpicc main.c -o dna transcription.c`
-- Executar `mpirun -np 2 dna` (`-np <quantidade_de_procesos>`)
+- Compilar `mpicc main.c -o dna transcription.c io.c`
+- Executar(2 processos) `mpirun -np 2 dna`

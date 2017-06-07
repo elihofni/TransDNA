@@ -6,6 +6,7 @@
 #include <math.h>
 #include <mpi.h>
 #include "transcription.h"
+#include "io.h"
 
 // Constantes
 #define MESTRE 0
@@ -42,17 +43,15 @@ int main(int argc, char** argv) {
         // Informa ao usuário a etapa em que o programa se encontra
         printf("\nProcesso Mestre: INICIOU ");
 
-        // printf("\nProcesso Mestre: LENDO CADEIA DE DNA NO ARQUIVO \n");
-        // TODO Ler cadeia de DNA à partir do arquivo
         // TODO ler cadeia original até encontrar o ponto inicial para a transcrição
+        char* cadeiaDNAoriginal = ler("dna.txt");
         printf("\nProcesso Mestre: LEITURA NO ARQUIVO CONCLUIDA ");
 
         // Início da cadeia de DNA. A partir desse ponto pode começar a transcrição
-        char* cadeiaDNAoriginal = "AAAAACGGCGTAGCAAAAAACGGCGTAGCAAAAAACGGCGTAGCAAAAAACGGCGTAGCA";
         int tamanhoCadeiaDNA = strlen(cadeiaDNAoriginal);
 
         // Particiona a cadeia original em codons (substrings de tamanho 3)
-        codonsDNA = split(cadeiaDNAoriginal);
+        codonsDNA = split(cadeiaDNAoriginal, TAMANHO_CODON);
         qtCodons = tamanhoCadeiaDNA/TAMANHO_CODON;
 
         // Inicia o tamanho dos vetores que aramzenarão os codonsRNA e aminoácidos
@@ -66,11 +65,17 @@ int main(int argc, char** argv) {
             // Envia informação básica necessária para os demais processos (Quantidade de Codons)
             MPI_Send(&qtCodons, 1, MPI_INT, idProc, CODONS, MPI_COMM_WORLD);
 
+            char* nucleotidios = malloc((qtCodons/qtProcessos)* TAMANHO_CODON * sizeof(char));
+
+            int w;
+            for(w=i; w<(qtCodons/qtProcessos) * (idProc + 1);w++) {
+                strcat(nucleotidios, codonsDNA[w]);
+            }
+
             // MPI_Send(indiceInicialDoArrayDeCodons, quantidadeDeCodonsEnviados, tipoDeDadoEnviado, idProcessoParaEnvio, tag, comunicadorMPI);
             int codon;
             for(codon=(qtCodons/qtProcessos) * idProc; codon<((qtCodons/qtProcessos) * (idProc + 1)); codon++) {
-                MPI_Send(&codonsDNA[((qtCodons/qtProcessos) * idProc) + codon], TAMANHO_CODON, MPI_CHAR, idProc, CADEIA_DNA, MPI_COMM_WORLD);
-                // printf("\nCODON %i = %s", codon, codonsDNA[codon]);
+                MPI_Send(nucleotidios, (qtCodons/qtProcessos ) * TAMANHO_CODON, MPI_CHAR, idProc, CADEIA_DNA, MPI_COMM_WORLD);
             }
             printf("\nProcesso Mestre: ENVIOU CODONS DNA PARA PROCESSO #%i", idProc);
         }
@@ -88,55 +93,62 @@ int main(int argc, char** argv) {
         printf("\nProcesso Mestre: IDENTIFICACAO DE AMINOACIDOS PARCIAL CONCLUIDA ");
 
         // Recebe os codonsRNA dos demais processos
+        char* todosRNA = malloc(tamanhoCadeiaDNA * sizeof(char));
+        for(i=0; i<qtCodons/qtProcessos; i++) {
+            strcat(todosRNA, codonsRNA[i]);
+        }
         for(i=1; i<qtProcessos; i++){
-            MPI_Recv(&codonsRNA[(qtCodons/qtProcessos) * i], qtCodons/qtProcessos, MPI_CHAR, i, TRANSCRICAO, MPI_COMM_WORLD, &status);
+            char* rnaFROMslave = malloc((qtCodons/qtProcessos) * TAMANHO_CODON * sizeof(char));
+            MPI_Recv(rnaFROMslave, qtCodons/qtProcessos * TAMANHO_CODON, MPI_CHAR, i, TRANSCRICAO, MPI_COMM_WORLD, &status);
+            strcat(todosRNA, rnaFROMslave);
         }
         printf("\nProcesso Mestre: TRANSCRICAO TOTAL CONCLUIDA ");
 
         // Recebe os aminoacidos dos demais processos
+        char* todosAminos = malloc(tamanhoCadeiaDNA * sizeof(char));
+        for(i=0; i<qtCodons/qtProcessos; i++) {
+            strcat(todosAminos, aminoacidos[i]);
+        }
         for(i=1; i<qtProcessos; i++){
-            MPI_Recv(&aminoacidos[(qtCodons/qtProcessos) * i], qtCodons/qtProcessos, MPI_CHAR, i, AMINOACIDOS, MPI_COMM_WORLD, &status);
+            char* aminoFROMslave = malloc((qtCodons/qtProcessos) * TAMANHO_CODON * sizeof(char));
+            MPI_Recv(aminoFROMslave, qtCodons/qtProcessos * TAMANHO_CODON, MPI_CHAR, i, AMINOACIDOS, MPI_COMM_WORLD, &status);
+            strcat(todosAminos, aminoFROMslave);
         }
         printf("\nProcesso Mestre: IDENTIFICACAO DE AMINOACIDOS TOTAL CONCLUIDA \n");
 
+        codonsRNA = split(todosRNA, TAMANHO_CODON);
+        aminoacidos = split(todosAminos, TAMANHO_CODON);
+
         // Mostra os resultados para o usuário
         printf("\n     .:RESULTADOS:. ");
-        printf("\n   DNA    RNA   AMINO");
+        printf("\n   DNA    RNA    AMINO");
         for(i=0; i<qtCodons; i++) {
-            printf("\n   %s    %s   %s", codonsDNA[i], codonsRNA, aminoacidos[i]);
+            printf("\n   %s   %s   %s", codonsDNA[i], codonsRNA[i], aminoacidos[i]);
         }
 
-        // TODO Escrever a cadeia original no arquivo de saida
-        // TODO Escrever os codonsDNA no arquivo de saida
-        // TODO Escrever os codonsRNA no arquivo de saida
-        // TODO Escrever os nomes dos aminoacidos no arquivo de saida
+        escrever(cadeiaDNAoriginal, "resultados.txt");
+        // escrever(cadeiaDNAoriginal + '\n' + codonsDNA + '\n' + rna + '\n' + amino, "resultados.txt");
 
     } else {
         printf("\n    Processo #%i: INICIOU ", idProcesso);
+        char* cadeia;
 
         // Recebe a quantidade de codons
         MPI_Recv(&qtCodons, 1, MPI_INT, MESTRE, CODONS, MPI_COMM_WORLD, &status);
-
-        printf("\n    Processo #%i: QTCODONS = %i", idProcesso, qtCodons);
-        printf("\n    Processo #%i: INICIO = %i", idProcesso, (qtCodons/qtProcessos) * idProcesso);
+        cadeia = malloc((qtCodons/qtProcessos) * TAMANHO_CODON * sizeof(char));
+        MPI_Recv(cadeia, (qtCodons/qtProcessos) * TAMANHO_CODON, MPI_CHAR, MESTRE, CADEIA_DNA, MPI_COMM_WORLD, &status);
+        printf("\n    Processo #%i: RECEBEU PARTE DA CADEIA DE DNA DO MESTRE ", idProcesso);
 
         // Inicializa os vetores
         codonsDNA = malloc(qtCodons/qtProcessos * sizeof(char*));
         codonsRNA = malloc(qtCodons/qtProcessos * sizeof(char*));
         aminoacidos = malloc(qtCodons/qtProcessos * sizeof(char*));
 
-        printf("\n    Processo #%i: TESTE", idProcesso);
-
-        // Recebe uma parte dos codons do DNA original para trabalhar
-        for(i=0; i<qtCodons/qtProcessos; i++) {
-            MPI_Recv(&codonsDNA[i], TAMANHO_CODON*4, MPI_CHAR, MESTRE, CADEIA_DNA, MPI_COMM_WORLD, &status);
-            printf("\nCODON %i = %s", i, codonsDNA[i]);
-        }
+        codonsDNA = split(cadeia, TAMANHO_CODON);
 
         // Realiza a transcrição da sua parte(DNA -> RNA). Transcrição feita por cada codon
         for(i=0; i<qtCodons/qtProcessos; i++) {
             codonsRNA[i] = transcription(codonsDNA[i], TAMANHO_CODON);
-            printf("\n    Processo #%i: codonsDNA[%i] = %s", idProcesso, i, codonsDNA[i]);
         }
         printf("\n    Processo #%i: TRANSCRICAO PARCIAL CONCLUIDA ", idProcesso);
 
@@ -146,10 +158,20 @@ int main(int argc, char** argv) {
         }
         printf("\n    Processo #%i: IDENTIFICACAO DE AMINOACIDOS PARCIAL CONCLUIDA", idProcesso);
 
+        // Remonta uma única string para poder enviar de volta ao MESTRE
+        char* rnaTOmaster = malloc((qtCodons/qtProcessos)* TAMANHO_CODON * sizeof(char));
+        char* aminoTOmaster = malloc((qtCodons/qtProcessos)* TAMANHO_CODON * sizeof(char));
+
+        for(i=0; i<(qtCodons/qtProcessos); i++) {
+            strcat(rnaTOmaster, codonsRNA[i]);
+            strcat(aminoTOmaster, aminoacidos[i]);
+        }
+
         // Envia os resultados para o MESTRE
-        MPI_Send(&codonsRNA[0], qtCodons/qtProcessos, MPI_CHAR, MESTRE, TRANSCRICAO, MPI_COMM_WORLD);
-        MPI_Send(&aminoacidos[0], qtCodons/qtProcessos, MPI_CHAR, MESTRE, AMINOACIDOS, MPI_COMM_WORLD);
+        MPI_Send(rnaTOmaster, qtCodons/qtProcessos * TAMANHO_CODON, MPI_CHAR, MESTRE, TRANSCRICAO, MPI_COMM_WORLD);
+        MPI_Send(aminoTOmaster, qtCodons/qtProcessos * TAMANHO_CODON, MPI_CHAR, MESTRE, AMINOACIDOS, MPI_COMM_WORLD);
         printf("\n    Processo #%i: ENVIOU RESULTADOS PARA O PROCESSO MESTRE", idProcesso);
+        printf("\n    Processo #%i: FINALIZOU", idProcesso);
     }
 
     // Finaliza ambiente de comunicação MPI

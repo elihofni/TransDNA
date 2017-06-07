@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "io.h"
 
 int tamanho(FILE* f){
 	fseek (f, 0, SEEK_END);
@@ -27,14 +28,4 @@ void escrever(char* str, char* caminho){
 	fprintf(f, "%s", str);
 
 	fclose(f);
-}
-
-int main(){
-	char* str = ler("teste.txt");
-
-	escrever("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "teste.txt");
-
-	printf("%s", str);
-
-	return EXIT_SUCCESS;
 }
