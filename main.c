@@ -99,8 +99,9 @@ int main(int argc, char** argv) {
         }
         for(i=1; i<qtProcessos; i++){
             char* rnaFROMslave = malloc((qtCodons/qtProcessos) * TAMANHO_CODON * sizeof(char));
-            MPI_Recv(rnaFROMslave, qtCodons/qtProcessos * TAMANHO_CODON, MPI_CHAR, i, TRANSCRICAO, MPI_COMM_WORLD, &status);
+            MPI_Recv(rnaFROMslave, (qtCodons/qtProcessos) * TAMANHO_CODON, MPI_CHAR, i, TRANSCRICAO, MPI_COMM_WORLD, &status);
             strcat(todosRNA, rnaFROMslave);
+            printf("\nProcesso Mestre: RECEBEU RNAs DO PROCESSO #%i", i);
         }
         printf("\nProcesso Mestre: TRANSCRICAO TOTAL CONCLUIDA ");
 
@@ -111,23 +112,33 @@ int main(int argc, char** argv) {
         }
         for(i=1; i<qtProcessos; i++){
             char* aminoFROMslave = malloc((qtCodons/qtProcessos) * TAMANHO_CODON * sizeof(char));
-            MPI_Recv(aminoFROMslave, qtCodons/qtProcessos * TAMANHO_CODON, MPI_CHAR, i, AMINOACIDOS, MPI_COMM_WORLD, &status);
+            MPI_Recv(aminoFROMslave, (qtCodons/qtProcessos) * TAMANHO_CODON, MPI_CHAR, i, AMINOACIDOS, MPI_COMM_WORLD, &status);
             strcat(todosAminos, aminoFROMslave);
+            printf("\nProcesso Mestre: RECEBEU AMINOs DO PROCESSO #%i", i);
         }
         printf("\nProcesso Mestre: IDENTIFICACAO DE AMINOACIDOS TOTAL CONCLUIDA \n");
 
         codonsRNA = split(todosRNA, TAMANHO_CODON);
         aminoacidos = split(todosAminos, TAMANHO_CODON);
 
-        // Mostra os resultados para o usuário
+        // Mostra os resultados para o usuário e prepara string final para escrever no arquivo de saída
+        char* resultadoArquivo = malloc(tamanhoCadeiaDNA * 7 * sizeof(char));
+        strcat(resultadoArquivo, ".:RESULTADOS:.\nDNA-RNA-AMINO");
         printf("\n     .:RESULTADOS:. ");
         printf("\n   DNA    RNA    AMINO");
         for(i=0; i<qtCodons; i++) {
             printf("\n   %s   %s   %s", codonsDNA[i], codonsRNA[i], aminoacidos[i]);
+            char* novaLinha = malloc(TAMANHO_CODON * 7 * sizeof(char));
+            strcat(novaLinha, "\n");
+            strcat(novaLinha, codonsDNA[i]);
+            strcat(novaLinha, "-");
+            strcat(novaLinha, codonsRNA[i]);
+            strcat(novaLinha, "-");
+            strcat(novaLinha, aminoacidos[i]);
+            strcat(resultadoArquivo, novaLinha);
         }
-
-        escrever(cadeiaDNAoriginal, "resultados.txt");
-        // escrever(cadeiaDNAoriginal + '\n' + codonsDNA + '\n' + rna + '\n' + amino, "resultados.txt");
+        escrever(resultadoArquivo, "resultados.txt");
+        printf("\nProcesso Mestre: ESCRITA DE RESULTADOS NO ARQUIVO CONCLUIDA ");
 
     } else {
         printf("\n    Processo #%i: INICIOU ", idProcesso);
@@ -168,6 +179,8 @@ int main(int argc, char** argv) {
         }
 
         // Envia os resultados para o MESTRE
+        // printf("\n    Processo #%i: TAMANHO DO RNA %i", idProcesso, strlen(rnaTOmaster));
+        // printf("\n    Processo #%i: TAMANHO DO AMINO %i", idProcesso, strlen(aminoTOmaster));
         MPI_Send(rnaTOmaster, qtCodons/qtProcessos * TAMANHO_CODON, MPI_CHAR, MESTRE, TRANSCRICAO, MPI_COMM_WORLD);
         MPI_Send(aminoTOmaster, qtCodons/qtProcessos * TAMANHO_CODON, MPI_CHAR, MESTRE, AMINOACIDOS, MPI_COMM_WORLD);
         printf("\n    Processo #%i: ENVIOU RESULTADOS PARA O PROCESSO MESTRE", idProcesso);
