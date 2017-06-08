@@ -1,15 +1,16 @@
 # TransDNA
 Transcrição DNA Paralela e identificação de aminoácidos
 
-### Thread Main
+### Processo Main
 
 - Ler o arquivo de entrada com o dna
-- Separar a string entre processos
-- Merge final de rna, codons, aminoacidos
+- Separar a string entre os processos (ela inclusive)
+- Realizar a transcrição, e identificacao de aminoacidos de sua parte
+- Receber as partes dos demais processos
 - Escrever no arquivo de saida
 
 
-### Thread
+### Processos Trabalhadores 
 
 ```C
 /*
@@ -43,12 +44,20 @@ char** func(char* str);
 char* func(char* strAraay);
 ```
 
-### Exemplo d arquivos
+### Exemplo de arquivos
 Entrada
-- DNA: aaaaacggcgtagca
+-
+    DNA: aaaaacggcgtagca
 
 Saida
--    DNA: aaaaacggcgtagca
--    RNA: uuuuugccgcaucgu
-- CODONS: uuu uug ccg cau cgu
--  AMINO: nome nome nome nome nome
+-      
+            DNA: aaaaacggcgtagca
+     CODONS DNA: aaa aac ggc gta gc              
+            RNA: uuuuugccgcaucgu
+     CODONS RNA: uuu uug ccg cau cgu
+    AMINOACIDOS: nome nome nome nome nome
+
+### Compilando e executando
+- Ir até a raíz do projeto via terminal
+- Compilar `mpicc main.c -o dna transcription.c io.c`
+- Executar(2 processos) `mpirun -np 2 dna`

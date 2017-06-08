@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 void initialize(char *array,int size){
     int i;
@@ -13,10 +14,9 @@ void initialize(char *array,int size){
 * str - String recebida pela thread.
 * Exemplo: AACCGCTCA -> AAC CGC UCA
 */
-char** split(const char* str){
+char** split(char* str, int subStringSize){
     int size = strlen(str);
-    const int subStringSize = 3;
-    const int finalArraySize = size / subStringSize;
+    int finalArraySize = size / subStringSize;
 
     char temp[subStringSize + 1];
     temp[subStringSize] = '\0';
@@ -37,7 +37,7 @@ char** split(const char* str){
     int j = 0;
 
     /*
-     * Iterador da string tempor·ria.
+     * Iterador da string temporÔøΩria.
      */
     i = 0;
     /*
@@ -49,7 +49,7 @@ char** split(const char* str){
         temp[i] = str[k];
 
         if(i == (subStringSize - 1)){
-            //Reseto o iterador da string tempor·ria.
+            //Reseto o iterador da string temporÔøΩria.
             i = -1;
 
             //atribuo a string de tamanho 3 para o vetor final.
@@ -91,7 +91,7 @@ char* transcription(char *chain, int size){
 * e traduz para um nome.
 * Exemplo: AAC CGC UCA -> Nome1 Nome2, Nome3
 */
-const char* aminoacids(char *in,const int size){
+char* aminoacids(char *in, int size){
     //n√£o gosto de switch e case, d√° no mesmo:
     if(in[0] == 'U' && in[1] == 'U'){
         if(in[2] == 'U' || in[2] == 'C') return "Phe";
@@ -145,7 +145,7 @@ const char* aminoacids(char *in,const int size){
 char** translate(char* str, int size){
     char* transc = transcription(str, size);
 
-    char** finalArray = split(transc);
+    char** finalArray = split(transc, 3);
     
     int i;
     for(i = 0; i < (size/3); i++){
@@ -160,16 +160,3 @@ char** translate(char* str, int size){
 
     return finalArray;
 }
-
-int main(){
-    int n = 5;
-    char** hehehe = translate("AAAAACGGCGTAGCA", 15);
-
-    int i;
-    for(i = 0; i < n; i++){
-        printf("%s\n", hehehe[i]);
-    }
-    return 0;
-}
-
-
