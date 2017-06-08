@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <mem.h>
 
 void initialize(char *array,int size){
     int i;
