@@ -28,3 +28,11 @@ void escrever(char* str, char* caminho){
 
 	fclose(f);
 }
+
+void escreverAppend(char* str, char* caminho){
+	FILE* f = fopen(caminho, "a");
+
+	fprintf(f, "%s", str);
+
+	fclose(f);
+}

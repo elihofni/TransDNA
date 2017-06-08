@@ -14,10 +14,7 @@ char** sequencial(char* str, int size, char* fileName){
         char* a = transcription(c, 3);
         char* b = aminoacids(a, 3);
         
-        printf("%s %s %s\n", a, b, c);
-        
-        
-        /*char str[11];
+        char str[11];
 		strcpy(str, a);
 		strcat(str, " ");
 		strcat(str, b);
@@ -25,7 +22,7 @@ char** sequencial(char* str, int size, char* fileName){
 		strcat(str, c);
 		strcat(str, "\n");
         
-        escrever(str, fileName);*/
+        escreverAppend(str, fileName);
     }
 
     return finalArray;
