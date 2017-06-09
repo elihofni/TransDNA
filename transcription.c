@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "transcription.h"
 
 void initialize(char *array,int size){
     int i;
@@ -25,10 +23,10 @@ char** split(char* str, int subStringSize){
     /*
      * Array que armazena as substrigns.
      */
-    char** finalArray = malloc(finalArraySize * sizeof(char*));
+    char** finalArray = calloc(finalArraySize, sizeof(char*));
     int i = 0;
     for (i = 0; i < finalArraySize; i++) {
-        finalArray[i] = malloc((subStringSize + 1) * sizeof(char));
+        finalArray[i] = calloc((subStringSize + 1), sizeof(char));
     }
 
     /*
@@ -74,8 +72,8 @@ char** split(char* str, int subStringSize){
 */
 char* transcription(char *chain, int size){
     int i;
-    char *rna = malloc(sizeof(char) * size),k;
-    initialize(rna,size);
+    char *rna = calloc((size+1), sizeof(char)),k;
+    //initialize(rna,size);
     for(i=0;i<size;i++){
         k = chain[i];
         if(k == 'A') rna[i] = 'U';

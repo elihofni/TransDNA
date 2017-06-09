@@ -1,7 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
+#include "io.h"
 
-int tamanho(FILE* f){
+static int tamanho(FILE* f){
 	fseek (f, 0, SEEK_END);
 	int length = ftell (f);
 	fseek (f, 0, SEEK_SET);
@@ -12,7 +11,7 @@ int tamanho(FILE* f){
 char* ler(char* caminho){
 	FILE* f = fopen(caminho, "r");
 
-	char* string = malloc(sizeof(char) * tamanho(f));
+	char* string = calloc(tamanho(f),sizeof(char));
 	
 	fscanf(f,  "%s",	string);
 
