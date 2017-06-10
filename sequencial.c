@@ -9,10 +9,10 @@ char** sequencial(char* str, int size, char* fileName){
     char** finalArray = split(str, 3);
 
     int i;
-	if(size%3){
+	/*if(size%3){
 		printf("Quantidade de bases nitrogenadas do DNA inválidas. O número deve ser múltiplo de 3 \n");
 		exit(1);
-	}
+	}*/
     for(i = 0; i < (size/3); i++){
         char* c = finalArray[i];
         char* a = transcription(c, 3);
@@ -33,7 +33,15 @@ char** sequencial(char* str, int size, char* fileName){
 }
 
 int main(){
-	sequencial("AAAAACGGCGTAGCAAAAAACGGCGTAGCA", 30, "saida.txt");
+	char *in, *chain;
+	printf("Insira o nome do arquivo de entrada: \n");
+	scanf("%s", in);
+	chain = ler(in);
+	int length = strlen(chain);
+	printf("%d \n",length);
+	printf("%s \n",chain);
+	sequencial(chain,length,"saida.txt");
+	//sequencial("AAAAACGGCGTAGCAAAAAACGGCGTAGCAGA", 32, "saida.txt");
 	
 	return 0;
 }

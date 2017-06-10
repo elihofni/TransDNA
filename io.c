@@ -10,6 +10,7 @@ static int tamanho(FILE* f){
 
 char* ler(char* caminho){
 	FILE* f = fopen(caminho, "r");
+	if(!f)exit(1);
 
 	char* string = calloc(tamanho(f),sizeof(char));
 	
@@ -22,7 +23,7 @@ char* ler(char* caminho){
 
 void escrever(char* str, char* caminho){
 	FILE* f = fopen(caminho, "w");
-
+	if(!f)exit(1);
 	fprintf(f, "%s", str);
 
 	fclose(f);
@@ -30,7 +31,7 @@ void escrever(char* str, char* caminho){
 
 void escreverAppend(char* str, char* caminho){
 	FILE* f = fopen(caminho, "a");
-
+	if(!f)exit(1);
 	fprintf(f, "%s", str);
 
 	fclose(f);
