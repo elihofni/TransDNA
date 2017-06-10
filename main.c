@@ -15,6 +15,7 @@
 #define CADEIA_DNA 100
 #define TRANSCRICAO 200
 #define AMINOACIDOS 300
+#define MPI_IMPAR_ERRO 666
 
 int main(int argc, char** argv) {
 
@@ -44,17 +45,17 @@ int main(int argc, char** argv) {
             // Informa ao usuário a etapa em que o programa se encontra
             printf("\nProcesso Mestre: INICIOU ");
 
-            // TODO ler cadeia original até encontrar o ponto inicial para a transcrição
             char *cadeiaDNAoriginal = ler("dna.txt");
+            char *cadeiaDNA = getCistron(cadeiaDNAoriginal);
+            int tamanhoCadeiaDNA = strlen(cadeiaDNA);
             printf("\nProcesso Mestre: LEITURA NO ARQUIVO CONCLUIDA ");
 
-            // Início da cadeia de DNA. A partir desse ponto pode começar a transcrição
-            int tamanhoCadeiaDNA = strlen(cadeiaDNAoriginal);
-
             // Particiona a cadeia original em codons (substrings de tamanho 3)
-            codonsDNA = split(cadeiaDNAoriginal, TAMANHO_CODON);
+            codonsDNA = split(cadeiaDNA, TAMANHO_CODON);
             qtCodons = tamanhoCadeiaDNA / TAMANHO_CODON;
+            printf(COR_AMARELO "\nProcesso Mestre: CODONS POR PROCESSO %.2f" COR_PADRAO, qtCodons/qtProcessos);
             free(cadeiaDNAoriginal);
+            free(cadeiaDNA);
 
             // Inicia o tamanho dos vetores que aramzenarão os codonsRNA e aminoácidos
             codonsRNA = malloc(qtCodons * sizeof(char *));
@@ -110,7 +111,7 @@ int main(int argc, char** argv) {
                 free(rnaFROMslave);
                 printf("\nProcesso Mestre: RECEBEU RNAs DO PROCESSO #%i", i);
             }
-            printf("\nProcesso Mestre: TRANSCRICAO TOTAL CONCLUIDA ");
+            printf(COR_VERDE "\nProcesso Mestre: TRANSCRICAO TOTAL CONCLUIDA " COR_PADRAO);
 
             // Recebe os aminoacidos dos demais processos
             char *todosAminos = malloc(tamanhoCadeiaDNA * sizeof(char));
@@ -125,7 +126,7 @@ int main(int argc, char** argv) {
                 free(aminoFROMslave);
                 printf("\nProcesso Mestre: RECEBEU AMINOs DO PROCESSO #%i", i);
             }
-            printf("\nProcesso Mestre: IDENTIFICACAO DE AMINOACIDOS TOTAL CONCLUIDA \n");
+            printf(COR_VERDE "\nProcesso Mestre: IDENTIFICACAO DE AMINOACIDOS TOTAL CONCLUIDA \n" COR_PADRAO);
 
             codonsRNA = split(todosRNA, TAMANHO_CODON);
             aminoacidos = split(todosAminos, TAMANHO_CODON);
@@ -133,10 +134,10 @@ int main(int argc, char** argv) {
             // Mostra os resultados para o usuário e prepara string final para escrever no arquivo de saída
             char *resultadoArquivo = malloc(tamanhoCadeiaDNA * 7 * sizeof(char));
             strcat(resultadoArquivo, ".:RESULTADOS:.\nDNA-RNA-AMINO");
-            printf("\n     .:RESULTADOS:. ");
-            printf("\n   DNA    RNA    AMINO");
+            printf(COR_AZUL "\n     .:RESULTADOS:. " COR_PADRAO);
+            printf(COR_AZUL "\n   DNA   RNA  AMINO" COR_PADRAO);
             for (i = 0; i < qtCodons; i++) {
-                printf("\n   %s   %s   %s", codonsDNA[i], codonsRNA[i], aminoacidos[i]);
+                printf(COR_AZUL "\n   %s   %s   %s" COR_PADRAO, codonsDNA[i], codonsRNA[i], aminoacidos[i]);
                 char *novaLinha = malloc(TAMANHO_CODON * 7 * sizeof(char));
                 strcat(novaLinha, "\n");
                 strcat(novaLinha, codonsDNA[i]);
@@ -152,7 +153,7 @@ int main(int argc, char** argv) {
             free(codonsRNA);
             free(aminoacidos);
             free(resultadoArquivo);
-            printf("\nProcesso Mestre: ESCRITA DE RESULTADOS NO ARQUIVO CONCLUIDA ");
+            printf(COR_VERDE "\nProcesso Mestre: ESCRITA DE RESULTADOS NO ARQUIVO CONCLUIDA " COR_PADRAO);
 
         } else {
             printf("\n    Processo #%i: INICIOU ", idProcesso);
@@ -212,10 +213,13 @@ int main(int argc, char** argv) {
         MPI_Finalize();
         tExecucao = tFim - tIni;
         if (idProcesso == MESTRE) {
-            printf("\nTempo total: %fs\n", tExecucao);
+            printf(COR_VERDE "\nTempo total: %fs\n" COR_PADRAO, tExecucao);
         }
     }else {
-        printf("Quantidade de processos inválida =/");
+        if (idProcesso == MESTRE) {
+            printf(COR_VERMELHO "Quantidade de processos inválida =/\n" COR_PADRAO);
+        }
+        MPI_Finalize();
     }
 
     return 0;

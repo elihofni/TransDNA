@@ -158,3 +158,24 @@ char** translate(char* str, int size){
 
     return finalArray;
 }
+
+/**
+ * Procura pelo início de um Cístron (A partir desse ponto pode-se começar a transcrição)
+ * @param cadeiaDNA Cadeia Original do arquivo
+ * @return Cadeia de DNA pronta para transcrição
+ */
+char* getCistron(char* cadeiaDNA) {
+    int tamanho = strlen(cadeiaDNA);
+    int i;
+    for(i=0;i<tamanho;i++){
+        if(cadeiaDNA[i] == 'A') {
+            if((cadeiaDNA[i+1] == 'T' && (cadeiaDNA[i+2] == 'T' || cadeiaDNA[i+2] == 'C')) || (cadeiaDNA[i+1] == 'C' && cadeiaDNA[i+2] == 'T')) {
+                printf(COR_VERDE "\nProcesso Mestre: CISTRON INICIA NO INDICE %i" COR_PADRAO, i+2);
+                char* cadeiaCistron = malloc((tamanho - (i+3)) * sizeof(char));
+                strncpy(cadeiaCistron, cadeiaDNA + i+3, (tamanho - (i+3)));
+                return cadeiaCistron;
+            }
+        }
+    }
+    return NULL;
+}

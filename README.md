@@ -4,6 +4,7 @@ Transcrição DNA Paralela e identificação de aminoácidos
 ### Processo Main
 
 - Ler o arquivo de entrada com o dna
+- Encontrar ponto inicial da transcrição (cístron)
 - Separar a string entre os processos (ela inclusive)
 - Realizar a transcrição, e identificacao de aminoacidos de sua parte
 - Receber as partes dos demais processos
