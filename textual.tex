@@ -1,0 +1,45 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{natbib}
+\title{Uma abordagem MPI para transcrição e tradução de DNA}
+\author{Erick Grilo, Max Fratane, Elihofni Lima}
+
+\begin{document}
+
+\maketitle
+\newpage
+
+\section{Introdução}
+\paragraph{}A transcrição do DNA é o processo através do qual o DNA serve de modelo para a síntese de RNA feita por um ser vivo. Apenas uma cadeia de DNA é usada nesse processo, ativada pela enzima RNA-polimerase. Em uma determinada região da molécula de DNA, ocorre a separação das cadeias, onde uma delas forma o RNA através do encadeamento de nucleotídeos complementares. Em suma, essa é a fase responsável por parear as bases nitrogenadas do DNA com as do RNA: A do DNA com U do RNA, T do DNA com A do RNA, C do DNA com G do Rna e G do DNA com C do RNA.
+
+\paragraph{}Relembrando alguns conceitos de biologia, A (adenina), C (citosina) T (timina) e G (guanina) são os nucleotídeos que compõem o DNA, e as mesmas, com exceção da timina (que vira U, de uracila, que por sua vez é uma base nitrogenada), compõem o RNA. Cada trinca de 3 dessas bases nitrogenadas é chamada de códons. Um códon codifica um aminoácido.
+
+\paragraph{}Motivado pelo tamanho que uma cadeia de DNA pode ter (em \citet{venter2001sequence}, no mapeamento do genoma humano, por exemplo, foram encontradas aproximadamente 2.91 bilhões de pares de bases nitrogenadas) e pelo processo de transcrição ser uma tarefa repetitiva, a criação de um programa paralelo do tipo SPMD (Simple Program, Multiple Data) aparenta ser uma boa abordagem para a solução desta tarefa.Em  \citet{chibli2008multiprocessor}, por exemplo, uma abordagem usando MPI para solucionar problemas de comparação de \emph{strings}, incluindo a transcrição de DNA para RNA e a identificação de aminoáciods, enquanto em \citet{kleinjung2002parallelized} e \citet{xue2014parallel}, o padrão MPI é utilizado para outro fim, que é o alinhamento de sequências de DNA (que visa encontrar similaridades no DNA que podem indicar relações evolucionárias entre diferentes indivíduos) . Logo, o objetivo do programa é paralelizar a transcrição e a tradução de DNA, onde a transcrição é o processo responsável por traduzir uma cadeia de DNA para RNA e a tradução, a partir de códons de RNA (que foram obtidos a partir da trascrição de códons de DNA para RNA), identificar o aminoácido que o códon em questão representa.
+
+\section{O método sequencial}
+
+\paragraph{}O método sequencial consiste em tratar toda a cadeia de entrada como uma única cadeia, oriunda da leitura de um arquivo texto onde se encontra tal cadeia. A partir daí, toda a cadeia do DNA é transcrita para RNA da seguinte forma: a cada três nucleotídeos (um códon), sua transcrição (conversão de DNA para RNA) é feita e, em seguida, a identificação do aminoácido que aquele códon se refere. Caso o códon não possui 3 nucleotídeos, tal codon é ignorado. Ao término do processamento, a cadeia de RNA é escrita no arquivo final, junto com cada códon transcrito e o respectivo aminoácido que ele representa.
+
+\section{O método paralelo}
+
+\paragraph{}O método paralelo consiste em paralelizar todo o processo de transcrição de DNA em RNA e o de tradução do códon para um aminoácido. Dessa forma, o trabalho é divido em n tarefas (1 tarefa mestre, n-1 tarefas escravo) onde a tarefa mestre é a responsável por repartir a sequência de DNA de entrada para as demais tarefas, ficando com a primeira parte da sequência. Após o envio dessas partes da entrada para cada uma das tarefas escravo, a tarefa mestre faz a transcrição da sua parcela da sequência de DNA para RNA, ao mesmo tempo que as tarefas escravo (após receberem a mensagem que contém os dados da tarefa mestre) também iniciam esse processo. A tarefa mestre então realiza a identificação dos aminoácidos que ela transcreveu e fica aguardando as demais tarefas escravo realizarem a parcela do seu processamento (transcrever e identificar os aminoácidos que lhe foram enviadas).\\
+\paragraph{}Quando todas as tarefas escravo terminarem o seu processamento, elas enviam de volta os resultados para a tarefa mestre (os códons transcritos e os aminoácidos identificados), que por sua vez imprime na tela o RNA transcrito e os aminoácidos identificados e escreve em um arquivo tais dados.
+
+\section{A implementação paralela}
+\paragraph{}O ambiente escolhido para a paralelização da implementação foi o MPI (Message Passing Interface), um padrão de comunicação de dados em computação paralela cujo objetivo busca efetuar a troca de mensagens entre processos (ou threads, dependendo da implementação) de fomra prática e eficiente.\\
+\paragraph{} A nossa implementação consiste no uso do ambiente MPI para paralelizar o processo: Ao iniciar o ambiente MPI, o ambiente de execução paralela é inicalizado. Em seguida, as tarefas são criadas e inicializadas no comunicador padrão (MPI\_COMM\_WORLD) e, então, existem duas rotinas possíveis para serm executadas por cada uma das tarefas, que é a rotina destinada para a tarefa mestre (identificada pelo rank 0) e outra para as demais tarefas.\\
+\paragraph{}A tarefa mestre então inicia sua execução: primeiro ela efetua a leitura do arquivo (utilizando a função \emph{ler}, disponível em io.c), obtendo a cadeia de DNA inserida como entrada e, em seguida, dividindo a mesma em pedaços menores de sub-cadeias de DNA (por exemplo, para uma cadeia de 60 nucleotídeos, como cada códon possui tamanho 3, nessa etapa a tarefa mestre dividiria a cadeia em 20 sub-cadeias de tamanho 3 cada, utilizando a rotina split, encontrada em transcription.c) e em seguida, envia as subcadeias para as demais tarefas (mantendo a primeira porção para si) por meio da chamada da função MPI\_Send (primeiramente enviando a quantidade de códons que a tarefa irá receber, em seguida enviando os códons), que faz o envio bloqueante síncrono de mensagens (isso significa que a tarefa que está enviando retorna a execução assim que a mensagem foi enviada, o que não implica que a mesma foi recebida pela tarefa receptora).\\
+\paragraph{}Após o envio dos dados necessários (quantidade de códons e os códons em si), a tarefa mestre começa a efetuar o processamento na parte dos códons que com ela ficou: primeiro, ela divide a sub-cadeia de DNA que restou em outras sub-cadeias de tamanho 3 (o tamanho de um códon) e, para cada uma dessas sub-cadeias, faz a transcrição de DNA para RNA, utilizando a função transcription (encontrada em transcription.c) e em seguida identificando o aminoácido referente ao códon transcrito, fazendo uso da rotina transcription (que pode ser encontrada em trascription.c).\\
+\paragraph{}Nesse momento, as demais tarefas escravo também estão fazendo o mesmo: após o recebimento das mensagens que foram enviadas pela tarefa mestre (recebimento feito por meio da rotina MPI\_Recv), cada uma das tarefas escravo divide a cadeia de DNA recebida em sub-cadeis de tamanho 3 (da mesma forma que a mestre), e, para cada sub-cadeia de DNA gerada a partir da cadeia que a tarefa recebeu, ela faz a transcrição de DNA e a tradução do códon para o aminoácido que ele identifica (da mesma forma que a tarefa mestre). Ao término do processo, elas enviam o resultado do processamento (que seria todos os códons transcritos e cada um dos seus respectivos aminoácidos) para a tarefa mestre\\
+\paragraph{} A mestre então, para cada tarefa escravo, ela recebe os dados da tarefa escravo (por meio da rotina MPI\_Recv) e, para cada conjunto de dados recebidos (de cada tarefa), ela vai armazenando as cadeias de RNA transcritos e os seus respectivos aminoácidos. Ao fim da recepção (todas as tarefas escravo concluíram o envio, a tarefa mestre então imprime na tela o resultado do processamento: para cada códon, imprime na tela o códon de DNA original da entrada, a cadeia de RNA transcrita referente à tal códon e o aminoácido que tal cadeia de RNA identifica. Em seguida, escreve o mesmo que ela imprimiu em um arquivo de saída. Ao fim da execução do ambiente MPI, é pego o tempo de finalização (a fim de ver quanto tempo o processamento levou) e o ambiente é finalizado pelo processo main (o mesmo onde o ambiente é inicializado) por meio da rotina MPI\_Finalize.\\
+
+\section{Código fonte da aplicação sequencial}
+\section{Código fonte da aplicação paralela}
+
+\section{Descrição dos experimentos computacionais}
+deu ruim aqui br
+
+\bibliographystyle{agsm}
+\bibliography{bibliografia}
+\end{document}
