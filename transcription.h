@@ -1,4 +1,7 @@
-#include "transcription.c"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 
 char* transcription(char *chain,int size);
 void initialize(char *array,int size);
