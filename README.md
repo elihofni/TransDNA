@@ -55,9 +55,10 @@ char* aminoacids(char *in, int size);
 ### Exemplo de arquivos
 Entrada
 -
-    DNA: AAAAACGGCGTAGCA
-    DNA: GTAGTAGTA*ATT*AAAAACGGCGTAGCA
+    DNA: ATTAAAAACGGCGTAGCA
+    DNA: GTAGTAGTAATTAAAAACGGCGTAGCA
 OBS: A cadeia pode ter qualquer tamanho, porém o cístron precisa ser múltiplo de 3
+OBS: A leitura procurará pelo início de um cístron, identificado pelos codons ATT, ACT e ATC. Toda a cadeia antes do cístron é ignorada visto que poderá gerar uma proteína inválida
 
 Saida
 -      
