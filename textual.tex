@@ -2,33 +2,82 @@
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage[portuguese]{babel}
+\usepackage{graphicx}
 \usepackage{natbib}
-\title{Uma abordagem MPI para transcrição e tradução de DNA}
+\usepackage{subfig}
+\title{Uma abordagem MPI para transcrição e tradução de cadeias de DNA}
 \author{Erick Grilo, Max Fratane, Elihofni Lima}
 
 \lstset{extendedchars=\true}
 \lstset{inputencoding=ansinew}
 
 \begin{document}
+\begin{flushright}
+\thispagestyle{empty}
+\includegraphics[width=.2\textwidth]{IC-UFF.pdf}
+\end{flushright}
 
-\maketitle
+\begin{center}
+\vfill
+\vspace{-7em}
+\emph{\Large Uma abordagem MPI para transcrição e tradução de DNA}
+\begin{flushright}
+\vspace{1em}
+\makebox[.5\textwidth][l]{\parbox{.5\textwidth}{
+\vspace{2em}
+Elihofni Lima\\
+Erick Grilo\\ 
+Max Fratane\\ 
+}}
+\end{flushright}
+\vfill
+\end{center}
+
+\newpage
 \newpage
 
-\section{Introdução}
-\paragraph{}A transcrição do DNA é o processo através do qual o DNA serve de modelo para a síntese de RNA feita por um ser vivo. Apenas uma cadeia de DNA é usada nesse processo, ativada pela enzima RNA-polimerase. Em uma determinada região da molécula de DNA, ocorre a separação das cadeias, onde uma delas forma o RNA através do encadeamento de nucleotídeos complementares. Em suma, essa é a fase responsável por parear as bases nitrogenadas do DNA com as do RNA: A do DNA com U do RNA, T do DNA com A do RNA, C do DNA com G do Rna e G do DNA com C do RNA.
+\section{Introdução e descrição da aplicação}
+\paragraph{}A transcrição do DNA é o processo através do qual o DNA serve de modelo para a síntese de RNA feita por um ser vivo. Apenas uma cadeia de DNA é usada nesse processo, ativada pela enzima RNA-polimerase. Em uma determinada região da molécula de DNA, ocorre a separação das hélices, onde uma delas forma o RNA através do encadeamento de nucleotídeos complementares. Em suma, essa é a fase responsável por parear as bases nitrogenadas do DNA com as do RNA: A do DNA com U do RNA, T do DNA com A do RNA, C do DNA com G do Rna e G do DNA com C do RNA.
 
-\paragraph{}Relembrando alguns conceitos de biologia, A (adenina), C (citosina) T (timina) e G (guanina) são os nucleotídeos que compõem o DNA, e as mesmas, com exceção da timina (que vira U, de uracila, que por sua vez é uma base nitrogenada), compõem o RNA. Cada trinca de 3 dessas bases nitrogenadas é chamada de códons. Um códon codifica um aminoácido.
+\paragraph{}Relembrando alguns conceitos de biologia, A (adenina), C (citosina) T (timina) e G (guanina) são os nucleotídeos que compõem o DNA, e as mesmas, com exceção da timina (que vira U, de uracila, que por sua vez é uma base nitrogenada), compõem o RNA. Cada trinca de 3 dessas bases nitrogenadas é chamada de códons. Um códon codifica um aminoácido, vide \citet{objetivo}.
 
-\paragraph{}Motivado pelo tamanho que uma cadeia de DNA pode ter (em \citet{venter2001sequence}, no mapeamento do genoma humano, por exemplo, foram encontradas aproximadamente 2.91 bilhões de pares de bases nitrogenadas) e pelo processo de transcrição ser uma tarefa repetitiva, a criação de um programa paralelo do tipo SPMD (Simple Program, Multiple Data) aparenta ser uma boa abordagem para a solução desta tarefa.Em  \citet{chibli2008multiprocessor}, por exemplo, uma abordagem usando MPI para solucionar problemas de comparação de \emph{strings}, incluindo a transcrição de DNA para RNA e a identificação de aminoáciods, enquanto em \citet{kleinjung2002parallelized} e \citet{xue2014parallel}, o padrão MPI é utilizado para outro fim, que é o alinhamento de sequências de DNA (que visa encontrar similaridades no DNA que podem indicar relações evolucionárias entre diferentes indivíduos) . Logo, o objetivo do programa é paralelizar a transcrição e a tradução de DNA, onde a transcrição é o processo responsável por traduzir uma cadeia de DNA para RNA e a tradução, a partir de códons de RNA (que foram obtidos a partir da trascrição de códons de DNA para RNA), identificar o aminoácido que o códon em questão representa. Como estamos considerando nenhuma mutação genética, a cadeia de entrada deve ser múltipla de 3 para que o algoritmo (tanto paralelo quanto sequencial) funcionem corretamente.\\
+\paragraph{}Motivado pelo tamanho que uma cadeia de DNA pode ter (em \citet{venter2001sequence}, no mapeamento do genoma humano, por exemplo, foram encontradas aproximadamente 2.91 bilhões de pares de bases nitrogenadas) e pelo processo de transcrição ser uma tarefa repetitiva, a criação de um programa paralelo do tipo SPMD (Simple Program, Multiple Data) aparenta ser uma boa abordagem para a solução desta tarefa.Em  \citet{chibli2008multiprocessor}, por exemplo, uma abordagem usando MPI para solucionar problemas de comparação de \emph{strings}, incluindo a transcrição de DNA para RNA e a identificação de aminoáciods, enquanto em \citet{kleinjung2002parallelized} e \citet{xue2014parallel}, o padrão MPI é utilizado para outro fim, que é o alinhamento de sequências de DNA (que visa encontrar similaridades no DNA que podem indicar relações evolucionárias entre diferentes indivíduos, ou seja, características semelhantes entre indivíduos de espécies diferentes.)\\ 
+\paragraph{}O objetivo é paralelizar a transcrição e a tradução de DNA, onde a transcrição é o processo responsável por traduzir uma cadeia de DNA para RNA e a tradução consiste em identificar o aminoácido que o códon em questão representa, a partir de códons de RNA (que foram obtidos a partir da trascrição de códons de DNA para RNA). Note que o processo só se inicia efetivamente quando na cadeia original de DNA dado na entrada é identificado um cístron (uma cadeia de DNA iniciada pelos códons compostos por ATC, ACT ou ATT, que possui informações para a síntese de uma proteína). Enquanto um cístron não é encontrado, não há nenhum processamento efetivo. Quando um cístron é encontrado, o processo se inicia. Como estamos considerando nenhuma mutação genética, o cístron deve ser múltipla de 3 para que o algoritmo funcione corretamente.Já, a cadeia original pode ter qualquer tamanho.\\
+\newpage
 
 \section{O método sequencial}
 
-\paragraph{}O método sequencial consiste em tratar toda a cadeia de entrada como uma única cadeia, oriunda da leitura de um arquivo texto onde se encontra tal cadeia. A partir daí, toda a cadeia do DNA é transcrita para RNA da seguinte forma: a cada três nucleotídeos (um códon), sua transcrição (conversão de DNA para RNA) é feita e, em seguida, a identificação do aminoácido que aquele códon se refere. Caso o códon não possui 3 nucleotídeos, tal codon é ignorado. Ao término do processamento, a cadeia de RNA é escrita no arquivo final, junto com cada códon transcrito e o respectivo aminoácido que ele representa.
+\paragraph{}O método sequencial consiste em tratar toda a cadeia de entrada como uma única cadeia, oriunda da leitura de um arquivo texto onde se encontra tal cadeia. A partir daí, toda a cadeia do DNA é transcrita para RNA da seguinte forma: primeiramente, é identificada o local correto para iniciar a transcrição da cadeia (onde o cístron se encontra); em seguida, a cada três nucleotídeos (um códon), sua transcrição (conversão de DNA para RNA) é feita e a identificação do aminoácido que aquele códon se refere é feita em seguida. Ao término da análise de um códon, o códon DNA original, a sua transcrição para códon RNA e o aminoácido que ele representa é escrito em uma linha do arquivo e esse procedimento se repete por todo o tamanho da cadeia de entrada. Caso o códon não possui 3 nucleotídeos (o tamanho do cístron não é múltiplo de 3), tal codon é ignorado. 
+
+\begin{figure}[!htb]
+\includegraphics[scale=0.30]{seq.jpeg}
+\caption{Exemplo de uma execução da apicação sequencial, indicando onde o cístron é encontrado na cadeia origina, seu tamanho e o tempo total de execução.}
+\label{arvore}
+\end{figure}
+\newpage
+
 
 \section{O método paralelo}
 
 \paragraph{}O método paralelo consiste em paralelizar todo o processo de transcrição de DNA em RNA e o de tradução do códon para um aminoácido. Dessa forma, o trabalho é divido em n tarefas (1 tarefa mestre, n-1 tarefas escravo) onde a tarefa mestre é a responsável por repartir a sequência de DNA de entrada para as demais tarefas, ficando com a primeira parte da sequência. Após o envio dessas partes da entrada para cada uma das tarefas escravo, a tarefa mestre faz a transcrição da sua parcela da sequência de DNA para RNA, ao mesmo tempo que as tarefas escravo (após receberem a mensagem que contém os dados da tarefa mestre) também iniciam esse processo. A tarefa mestre então realiza a identificação dos aminoácidos que ela transcreveu e fica aguardando as demais tarefas escravo realizarem a parcela do seu processamento (transcrever e identificar os aminoácidos que lhe foram enviadas).\\
 \paragraph{}Quando todas as tarefas escravo terminarem o seu processamento, elas enviam de volta os resultados para a tarefa mestre (os códons transcritos e os aminoácidos identificados), que por sua vez imprime na tela o RNA transcrito e os aminoácidos identificados e escreve em um arquivo tais dados.
+
+\begin{figure}[!htb]
+\centering
+\subfloat[Início da execução, mostrando o \emph{status} dos processos, tamanho total da cadeia de entrada, tamanho do cístron que será processado, o total de códons, a quantidade de códons enviados para cada processo escravo e parte do resultado final.]{
+\includegraphics[scale=0.28]{par1.jpeg}
+\label{par1}
+}
+\quad
+\subfloat[Fim da execução, mostrando a confirmação do recebimento dos dados processados pela tarefa mestre, os dados processados (que foram escritos em um arquivo e o tempo total de execução]{
+\includegraphics[scale=0.28]{par2.jpeg}
+\label{par2}
+}
+\caption{Exemplo de uma execução da aplicação paralela, no ambiente MPI com dois processos, um mestre e um escravo}
+\label{Figura 1}
+\end{figure}
+
+\newpage
 
 \section{A implementação paralela}
 \paragraph{}O ambiente escolhido para a paralelização da implementação foi o MPI (Message Passing Interface), um padrão de comunicação de dados em computação paralela cujo objetivo busca efetuar a troca de mensagens entre processos (ou threads, dependendo da implementação) de fomra prática e eficiente.\\
@@ -38,68 +87,10 @@
 \paragraph{}Nesse momento, as demais tarefas escravo também estão fazendo o mesmo: após o recebimento das mensagens que foram enviadas pela tarefa mestre (recebimento feito por meio da rotina MPI\_Recv), cada uma das tarefas escravo divide a cadeia de DNA recebida em sub-cadeis de tamanho 3 (da mesma forma que a mestre), e, para cada sub-cadeia de DNA gerada a partir da cadeia que a tarefa recebeu, ela faz a transcrição de DNA e a tradução do códon para o aminoácido que ele identifica (da mesma forma que a tarefa mestre). Ao término do processo, elas enviam o resultado do processamento (que seria todos os códons transcritos e cada um dos seus respectivos aminoácidos) para a tarefa mestre\\
 \paragraph{} A mestre então, para cada tarefa escravo, ela recebe os dados da tarefa escravo (por meio da rotina MPI\_Recv) e, para cada conjunto de dados recebidos (de cada tarefa), ela vai armazenando as cadeias de RNA transcritos e os seus respectivos aminoácidos. Ao fim da recepção (todas as tarefas escravo concluíram o envio, a tarefa mestre então imprime na tela o resultado do processamento: para cada códon, imprime na tela o códon de DNA original da entrada, a cadeia de RNA transcrita referente à tal códon e o aminoácido que tal cadeia de RNA identifica. Em seguida, escreve o mesmo que ela imprimiu em um arquivo de saída. Ao fim da execução do ambiente MPI, é pego o tempo de finalização (a fim de ver quanto tempo o processamento levou) e o ambiente é finalizado pelo processo main (o mesmo onde o ambiente é inicializado) por meio da rotina MPI\_Finalize.\\
 
-\section{Código fonte da aplicação sequencial}
-\begin{lstlisting}[language = C]
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "io.h"
-#include "transcription.h"
-#define TAMANHO_CODON 3
-
-char** sequencial(char* str, int size, char* fileName){
-    char** finalArray = split(str, 3);
-
-    int i;
-	/*if(size%3){
-		printf("Quantidade de bases nitrogenadas do DNA inválidas. O número deve ser múltiplo de 3 \n");
-		exit(1);
-	}*/
-    for(i = 0; i < (size/3); i++){
-        char* c = finalArray[i];
-        char* a = transcription(c, 3);
-        char* b = aminoacids(a, 3);
-        
-        char str[11];
-		strcpy(str, a);
-		strcat(str, " ");
-		strcat(str, b);
-		strcat(str, " ");
-		strcat(str, c);
-		strcat(str, "\n");
-        
-        escreverAppend(str, fileName);
-    }
-
-    return finalArray;
-}
-
-int main(){
-	char *in, *chain;
-	printf("Insira o nome do arquivo de entrada: \n");
-	scanf("%s", in);
-	chain = ler(in);
-	int length = strlen(chain);
-	printf("%d \n",length);
-	printf("%s \n",chain);
-	sequencial(chain,length,"saida.txt");
-	
-	return 0;
-}
-\end{lstlisting}
 \newpage
-\subsection{\emph{Helpers} que também são utilizados no código da aplicação paralela}
-\subsubsection{Entrada e saída}
-\lstinputlisting{io.c}
-\newpage
-
-\subsubsection{Funções responsáveis pela transcrição do DNA para RNA e a identificação do aminoácido correspondente}
-\lstinputlisting{transcription.c}
-\newpage
-\section{Código fonte da aplicação paralela}
 
 \section{Descrição dos experimentos computacionais}
-deu ruim aqui br
+A ideia inicial seria efetuar a medição de desempenho em diversas máquinas. Porém, como não foi possível, a máquina física onde foi testada os códigos é um computador com 8 GB de memória RAM real, processador Intel i7-5500U @ 2.40 GHz, com o S.O Windows 10 64 bits. Os códigos foram efetivamente executados numa máquina virtual usando VirtualBox 5.1.22, onde a máquina virtual possui o S.O Ubuntu 16.04 LTS 64 bits e 4 GB RAM dedicados à ela.
 
 \bibliographystyle{agsm}
 \bibliography{bibliografia}
