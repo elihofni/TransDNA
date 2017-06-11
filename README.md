@@ -1,21 +1,21 @@
 # TransDNA
-Transcrição DNA Paralela e identificação de aminoácidos
+Transcrição DNA e identificação de aminoácidos
 
-### Processo Main
+### Processo Mestre
 
-- Ler o arquivo de entrada com o dna
-- Encontrar ponto inicial da transcrição (início do cístron)
-- Separar a string entre os processos (ela inclusive)
-- Realizar a transcrição, e identificacao de aminoacidos de sua parte
-- Receber as partes dos demais processos
-- Escrever no arquivo de saida
+- Lê o arquivo de entrada com o dna
+- Encontra ponto inicial da transcrição (início do cístron)
+- Separa a string entre os processos (ela inclusive)
+- Realiza a transcrição, e identifica os aminoacidos de sua parte
+- Recebe as partes dos demais processos
+- Escreve no arquivo de saida
 
 
 ### Processos Trabalhadores 
 
 ```C
 /*
-* BIO: TRANSRIÇÂO [DNA -> RNA]
+* BIO: TRANSCRIÇÂO [DNA -> RNA]
 * Traduz uma sequencia em DNA para RNA.
 * str - String recebida pela thread.
 * Exemplo: AACCGCTCA -> AACCGCUCA 
@@ -48,15 +48,13 @@ char* func(char* strAraay);
 ### Exemplo de arquivos
 Entrada
 -
-    DNA: aaaaacggcgtagca
+    DNA: AAAAACGGCGTAGCA
 
 Saida
 -      
-            DNA: aaaaacggcgtagca
-     CODONS DNA: aaa aac ggc gta gc              
-            RNA: uuuuugccgcaucgu
-     CODONS RNA: uuu uug ccg cau cgu
-    AMINOACIDOS: nome nome nome nome nome
+     CODONS DNA: AAA AAC GGC GTA GCA                        
+     CODONS RNA: UUU UUG CCG CAU CGU
+    AMINOACIDOS: Phe Leu Pro His Arg
 
 ### Compilando e executando
 - Ir até a raíz do projeto via terminal
