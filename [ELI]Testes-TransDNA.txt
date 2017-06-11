@@ -1,0 +1,83 @@
+.:Máquina usada:.
+
+Ubuntu 16.04 LTS 64bits(Máquina Virtual via VirtualBox)
+4GB memória
+i7-5500U 2,4GHz (2 núcleos reais)
+Disco 27GB
+
+---------------------------------------------------------
+
+.:Execuções em uma mesma máquina:.
+
+Cada bateria de cístron sofreu uma pausa de 3 minutos
+Cada bateria de execuções sofreu uma pausa de 3 minutos
+- Resultados:
+	- Cístron de tamanho 60
+			   #Processos |  1ª exec  |   2ª exec   |   3ª exec   |    MÉDIA    |   OBS
+		Sequencial: 
+			- 1  processo: 0,000161s  |  0,000263s  |  0,000170s  |  0,000198s  |  MELHOR
+		Paralelo:		  
+			- 1  processo: 0,000905s  |  0,000673s  |  0,001260s  |  0,000946s  |  +- 5x
+			- 2 processos: 0,002815s  |  0,001322s  |  0,007974s  |  0,004037s  |
+			- 3 processos: 0,009347s  |  0,012447s  |  0,002983s  |  0,008259s  |
+			- 4 processos: 0,002717s  |  0,002732s  |  0,009044s  |  0,004831s  |
+			- 5 processos: 0,002759s  |  0,007151s  |  0,002873s  |  0,004261s  |
+			- 6 processos: 0,002399s  |  0,006788s  |  0,003720s  |  0,004302s  |
+			- 7 processos: 0,009775s  |  0,002534s  |  0,003134s  |  0,005147s  |
+			- 8 processos: 0,002090s  |  0,005234s  |  0,010324s  |  0,005882s  |
+			- 9 processos: 0,006355s  |  0,005824s  |  0,007481s  |  0,006553s  |
+			-10 processos: 0,004734s  |  0,004441s  |  0,015296s  |  0,008157s  |
+			-20 processos: 0,007049s  |  0,007616s  |  0,048893s  |  0,021186s  |  PIOR
+
+	- Cístron de tamanho 122
+			   #Processos |  1ª exec  |   2ª exec   |   3ª exec   |    MÉDIA    |   OBS
+		Sequencial: 
+			- 1  processo: 0,000270s  |  0,000319s  |  0,000279s  |  0,000289s  |  MELHOR
+		Paralelo:		  
+			- 1  processo: 0,000560s  |  0,000673s  |  0,000735s  |  0,000656s  | +- 2x 
+			- 2 processos: 0,001141s  |  0,001135s  |  0,001447s  |  0,------s  |
+			- 4 processos: 0,006964s  |  0,006780s  |  0,007720s  |  0,------s  |
+			- 8 processos: 0,048219s  |  0,006210s  |  0,005909s  |  0,------s  |
+			-16 processos: 0,009243s  |  0,010715s  |  0,029486s  |  0,------s  |
+			-32 processos: 0,045284s  |  0,047188s  |  0,132972s  |  0,------s  |  PIOR
+
+	- Cístron de tamanho 842
+			   #Processos |  1ª exec  |   2ª exec   |   3ª exec   |    MÉDIA    |   OBS
+		Sequencial: 
+			- 1  processo: 0,001204s  |  0,001251s  |  0,001167s  |  0,001207s  |  MELHOR
+		Paralelo:		  
+			- 1  processo: 0,001647s  |  0,003152s  |  0,003888s  |  0,002895s  | +- 2x 
+			- 2 processos: 0,024973s  |  0,971038s  |  1,230680s  |  0,------s  |
+			- 4 processos: 0,016289s  |  0,086328s  |  2,050373s  |  0,------s  |
+			- 8 processos: 0,012612s  |  0,137131s  |  0,549633s  |  0,------s  |
+			-16 processos: 0,011125s  |  0,708151s  |  2,310141s  |  0,------s  |
+			-30 processos: 0,048504s  |  0,590812s  |  1,115891s  |  0,------s  |  
+			-32 processos: --------s  |  --------s  |  --------s  |  --------s  |  ERRO
+		   -120 processos: 1,816374s  |  8,354731s  |  6,058427s  |  5,409844s  |  PIOR
+
+- Conclusões:
+	Para uma mesma máquina, independentemente da quantidade de processos, a execução paralela nunca é superior à execução sequencial. Demais testes devem seguir em máquinas distintas e com uma cadeia consideravelmente maior.
+	OBS: cístron de tamanho 842 gerou erro de execução.
+
+---------------------------------------------------------
+
+.:Execuções em 2 máquinas:.
+
+- Resultados
+- Conclusões:
+
+
+---------------------------------------------------------
+
+.:Execuções em 3 máquinas:.
+
+- Resultados
+- Conclusões:
+
+---------------------------------------------------------
+
+.:Execuções em 5 máquinas:.
+
+- Resultados
+- Conclusões:
+

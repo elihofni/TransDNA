@@ -4,7 +4,7 @@ Transcrição DNA Paralela e identificação de aminoácidos
 ### Processo Main
 
 - Ler o arquivo de entrada com o dna
-- Encontrar ponto inicial da transcrição (cístron)
+- Encontrar ponto inicial da transcrição (início do cístron)
 - Separar a string entre os processos (ela inclusive)
 - Realizar a transcrição, e identificacao de aminoacidos de sua parte
 - Receber as partes dos demais processos
@@ -60,5 +60,12 @@ Saida
 
 ### Compilando e executando
 - Ir até a raíz do projeto via terminal
-- Compilar `mpicc main.c -o dna transcription.c io.c`
-- Executar(2 processos) `mpirun -np 2 dna`
+- Paralelo
+
+        - Compilar `mpicc main.c -o dna transcription.c io.c`
+        - Executar(2 processos) `mpirun -np 2 dna`
+
+- Sequencial
+
+        - Compilar(sequencial) `gcc sequencial.c -o sequencial transcription.c io.c`
+        - Executar `./sequencial`

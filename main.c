@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
         printf("\nProcesso Mestre: INICIOU ");
 
         // Le a cadeia do arquivo de entrada e encontra o ponto inicial para transcrição
-        char *cadeiaDNAoriginal = ler("dna.txt");
+        char *cadeiaDNAoriginal = ler("dna3.txt");
         printf("\nProcesso Mestre: LEITURA NO ARQUIVO CONCLUIDA ");
         char *cadeiaDNA = getCistron(cadeiaDNAoriginal);
         int tamanhoCadeiaDNA = strlen(cadeiaDNA);
@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
 
         // Mostra os resultados para o usuário e prepara string final para escrever no arquivo de saída
         char *resultadoArquivo = malloc(tamanhoCadeiaDNA * 7 * sizeof(char));
-        strcat(resultadoArquivo, ".:RESULTADOS:.\nDNA-RNA-AMINO");
+        strcat(resultadoArquivo, ".:RESULTADOS:.\nDNA   RNA  AMINO");
         printf(COR_AZUL "\n     .:RESULTADOS:. " COR_PADRAO);
         printf(COR_AZUL "\n   DNA   RNA  AMINO" COR_PADRAO);
         for (i = 0; i < qtCodons; i++) {
@@ -166,9 +166,9 @@ int main(int argc, char** argv) {
             initialize(novaLinha, TAMANHO_CODON * 7);
             strcat(novaLinha, "\n");
             strcat(novaLinha, codonsDNA[i]);
-            strcat(novaLinha, "-");
+            strcat(novaLinha, "   ");
             strcat(novaLinha, codonsRNA[i]);
-            strcat(novaLinha, "-");
+            strcat(novaLinha, "   ");
             strcat(novaLinha, aminoacidos[i]);
             strcat(resultadoArquivo, novaLinha);
             free(novaLinha);

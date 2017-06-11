@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "io.h"
 #include "transcription.h"
 #define TAMANHO_CODON 3
@@ -9,10 +10,6 @@ char** sequencial(char* str, int size, char* fileName){
     char** finalArray = split(str, 3);
 
     int i;
-	/*if(size%3){
-		printf("Quantidade de bases nitrogenadas do DNA inválidas. O número deve ser múltiplo de 3 \n");
-		exit(1);
-	}*/
     for(i = 0; i < (size/3); i++){
         char* c = finalArray[i];
         char* a = transcription(c, 3);
@@ -33,15 +30,18 @@ char** sequencial(char* str, int size, char* fileName){
 }
 
 int main(){
-	char *in, *chain;
-	printf("Insira o nome do arquivo de entrada: \n");
-	scanf("%s", in);
-	chain = ler(in);
+	clock_t start, end;
+	double cpu_time_used;
+	start = clock();
+	char *chain;
+	chain = ler("dna3.txt");
+	chain = getCistron(chain);
 	int length = strlen(chain);
-	printf("%d \n",length);
-	printf("%s \n",chain);
+	printf("TAMANHO DO CISTRON %d \n",length);
 	sequencial(chain,length,"saida.txt");
-	//sequencial("AAAAACGGCGTAGCAAAAAACGGCGTAGCAGA", 32, "saida.txt");
-	
+	end = clock();
+	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+	printf(COR_VERDE "Tempo Total: %.6fs \n" COR_PADRAO, cpu_time_used);
+
 	return 0;
 }
