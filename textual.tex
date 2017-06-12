@@ -99,7 +99,7 @@ A ideia inicial seria efetuar a medição de desempenho em diversas máquinas. P
 1 processo   &	0,000161s  &    0,000263s    & 0,000170s   &  0,000198s\\ \hline
 
 \end{tabular}
-\caption{Tabela da execução com entrada de 60 cístrons para a aplicação sequencial}
+\caption{Tabela da execução com entrada de um cístron com 60 nucleotídeos para a aplicação sequencial}
 \end{table}
 
 \begin{table}[!htb]
@@ -118,10 +118,10 @@ A ideia inicial seria efetuar a medição de desempenho em diversas máquinas. P
 10 processos & 0,004734s  &  0,004441s  &  0,015296s  &  0,008157s \\ \hline
 20 processos & 0,007049s  &  0,007616s  &  0,048893s  &  0,021186s \\ \hline 
 \end{tabular}
-\caption{Tabela da execução com entrada de 60 cístrons para a aplicação paralela}
+\caption{Tabela da execução com entrada de um cístron com 60 nucleotídeos para a aplicação paralela}
 \end{table}
 
-\paragraph{} Para a primeira bateria de testes, note que a aplicação sequencial acabou sendo melhor que as execuções da aplicação paralela: enquanto a execução no ambiente MPI com apenas 1 processo culminou em ser aproximadamente 5x mais lenta que a sequencial, e a execução com 20 processos teve o pior desempenho médio.\\
+\paragraph{} Para a primeira bateria de testes, note que a aplicação sequencial acabou sendo melhor que as execuções da aplicação paralela: enquanto a execução no ambiente MPI com apenas 1 processo culminou em ser aproximadamente 5 vezes mais lenta que a sequencial, e a execução com 20 processos teve o pior desempenho médio.\\
 \newpage
 \begin{table}[!htb]
 \begin{tabular}{| l | l | l | l | l | p{5cm} |} 
@@ -130,7 +130,7 @@ A ideia inicial seria efetuar a medição de desempenho em diversas máquinas. P
 1 processo   &	0,000270s  &    0,000319s   & 0,000279s   &  0,000289s\\ \hline
 
 \end{tabular}
-\caption{Tabela da execução com entrada de 122 cístrons para a aplicação sequencial}
+\caption{Tabela da execução com entrada de um cístron com 122 nucleotídeos para a aplicação sequencial}
 \end{table}
 
 \begin{table}[!htb]
@@ -144,10 +144,10 @@ Nº processos & 1ª execução & 2ª execução & 3ª execução & Média\\ \hli
 16 processos & 0,009243s &  0,010715s  &  0,029486s  &  0,016481s    \\ \hline
 32 processos & 0,045284s  &  0,047188s  &  0,132972s  &  0,075148s  \\ \hline
 \end{tabular}
-\caption{Tabela da execução com entrada de 122 cístrons para a aplicação paralela}
+\caption{Tabela da execução com entrada de um cístron com 122 nucleotídeos para a aplicação paralela}
 \end{table}
 
-\paragraph{}Para a segunda bateria de testes, note que a aplicação sequencial novamente acabou sendo melhor que as execuções da aplicação paralela:a execução sequencial obteve uma melhor média frente às execuções paralelas, onde a primeira obteve uma média aproximadamente 2x pior que a sequencial, onde a execução com 32 processos obteve o pior desempenho frente às demais.\\
+\paragraph{}Para a segunda bateria de testes, note que a aplicação sequencial novamente acabou sendo melhor que as execuções da aplicação paralela:a execução sequencial obteve uma melhor média frente às execuções paralelas, onde a primeira obteve uma média aproximadamente 2 vezes pior que a sequencial, onde a execução com 32 processos obteve o pior desempenho frente às demais.\\
 
 \begin{table}[!htb]
 \begin{tabular}{| l | l | l | l | l | p{5cm} |} 
@@ -155,7 +155,7 @@ Nº processos & 1ª execução & 2ª execução & 3ª execução & Média\\ \hli
   Nº processos & 1ª execução & 2ª execução & 3ª execução & Média\\ \hline
  1  processo & 0,001204s  &  0,001251s  &  0,001167s  &  0,001207s \\ \hline
 \end{tabular}
-\caption{Tabela da execução com entrada de 842 cístrons para a aplicação sequencial}
+\caption{Tabela da execução com entrada de um cístron com 842 nucleotídeos para a aplicação sequencial}
 \end{table}
 
 
@@ -172,12 +172,12 @@ Nº processos & 1ª execução & 2ª execução & 3ª execução & Média\\ \hli
 32 processos & --------s  &  --------s  &  --------s  &  --------s  \\ \hline
 120 processos & 1,816374s  &  8,354731s  &  6,058427s  &  5,409844s\\ \hline
 \end{tabular}
-\caption{Tabela da execução com entrada de 842 cístrons para a aplicação paralela}
+\caption{Tabela da execução com entrada de um cístron com 842 nucleotídeos para a aplicação paralela}
 \end{table}
 \newpage
 
-\paragraph{} Na terceira bateria de testes, temos (novamente) que a aplicação sequencial obteve um melhor desempenho frente às execuções da aplicação paralela: o melhor caso da aplicação paralela foi na execução com apenas 1 processo, onde o tempo médio foi 2x pior que o tempo médio da execução da aplicação sequencial, enquanto o pior caso foi a execução com 120 processos, com um tempo médio de execução de 5,409844 segundos (isso é aproximadamente 4.482x pior que a aplicação sequencial). Note que por algum motivo, a execução da aplicação paralela não teve sua execução bem sucedida com 32 tarefas (não sabemos o motivo).\\
-\paragraph{}Para todos os casos de teste, percebe-se que pelo menos em uma única máquina, o desempenho da aplicação paralela no ambiente MPI foi pior que o desempenho da sequencial.\\
+\paragraph{} Na terceira bateria de testes, temos (novamente) que a aplicação sequencial obteve um melhor desempenho frente às execuções da aplicação paralela: o melhor caso da aplicação paralela foi na execução com apenas 1 processo, onde o tempo médio foi 2 vezes pior que o tempo médio da execução da aplicação sequencial, enquanto o pior caso foi a execução com 120 processos, com um tempo médio de execução de 5,409844 segundos (isso é aproximadamente 4.482 vezes pior que a aplicação sequencial). Note que por algum motivo, a execução da aplicação paralela não teve sua execução bem sucedida com 32 tarefas (não sabemos o motivo).\\
+\paragraph{}Para todos os casos de teste, percebe-se que pelo menos em uma única máquina, o desempenho da aplicação paralela no ambiente MPI foi pior que o desempenho da sequencial. Baseados nos testes, somos levados à concluir que a transmissão de mensagens entre os processos pode influenciar drasticamente no desempenho deles, de forma que quanto mais processos tiverem,mais mensagens são trocadas, mais as tarefas têm que lidar com o envio e o recebimento de mensagens, podendo fazer o processamento devido à troca de mensagens crescer exponencialmente.\\
 
 
 
