@@ -51,7 +51,7 @@ Max Fratane\\
 
 \begin{figure}[!htb]
 \includegraphics[scale=0.30]{seq.jpeg}
-\caption{Exemplo de uma execução da apicação sequencial, indicando onde o cístron é encontrado na cadeia origina, seu tamanho e o tempo total de execução.}
+\caption{Exemplo de uma execução da aplicação sequencial, indicando onde o cístron é encontrado na cadeia origina, seu tamanho e o tempo total de execução.}
 \label{arvore}
 \end{figure}
 \newpage
@@ -90,7 +90,96 @@ Max Fratane\\
 \newpage
 
 \section{Descrição dos experimentos computacionais}
-A ideia inicial seria efetuar a medição de desempenho em diversas máquinas. Porém, como não foi possível, a máquina física onde foi testada os códigos é um computador com 8 GB de memória RAM real, processador Intel i7-5500U @ 2.40 GHz, com o S.O Windows 10 64 bits. Os códigos foram efetivamente executados numa máquina virtual usando VirtualBox 5.1.22, onde a máquina virtual possui o S.O Ubuntu 16.04 LTS 64 bits e 4 GB RAM dedicados à ela.
+A ideia inicial seria efetuar a medição de desempenho em diversas máquinas. Porém, como não foi possível, a máquina física onde foi testada os códigos é um computador com 8 GB de memória RAM real, processador Intel i7-5500U @ 2.40 GHz, com o S.O Windows 10 64 bits. Os códigos foram efetivamente executados em uma máquina virtual usando VirtualBox 5.1.22, onde a máquina virtual possui o S.O Ubuntu 16.04 LTS 64 bits, 4 GB RAM e 2 núcleos do processador físico (de um total de 4 núcleos) dedicados à ela. Foram executados 3 casos de teste: uma entrada com a cadeia de DNA de 60 cístrons, uma entrada com 122 cístrons e uma entrada com 842 cístrons (observe que a quantidade de cístons na entrada pode diferir do tamanho da cadeia de DNA de  entrada original). A cada bateria de teste, houve uma pausa de três minutos.Nessas condições, os seguintes resultados foram obtidos:\\
+
+\begin{table}[!htb]
+\begin{tabular}{| l | l | l | l | l | p{5cm} |} 
+\hline
+  Nº processos & 1ª execução & 2ª execução & 3ª execução & Média\\ \hline
+1 processo   &	0,000161s  &    0,000263s    & 0,000170s   &  0,000198s\\ \hline
+
+\end{tabular}
+\caption{Tabela da execução com entrada de 60 cístrons para a aplicação sequencial}
+\end{table}
+
+\begin{table}[!htb]
+\begin{tabular}{| l | l | l | l | l | p{5cm} |} 
+\hline
+  Nº processos & 1ª execução & 2ª execução & 3ª execução & Média\\ \hline
+1 processo   &	0,000905s &    0,000673s    & 0,001260s  &  0,000946s \\ \hline
+2 processos &	0,002815s  &    0,001322s    & 0,00170    &  0,000198s\\ \hline
+3 processos & 0,009347s  &  0,012447s  &  0,002983s  &  0,008259s  \\ \hline
+4 processos & 0,002717s  &  0,002732s  &  0,009044s  &  0,004831s  \\ \hline
+5 processos & 0,002759s  &  0,007151s  &  0,002873s  &  0,004261s  \\ \hline
+6 processos & 0,002399s  &  0,006788s  &  0,003720s  &  0,004302s  \\ \hline
+7 processos & 0,009775s  & 0,002534s  &  0,003134s  &  0,005147s\\ \hline
+8 processos & 0,002090s  &  0,005234s  &  0,010324s  &  0,005882s  \\ \hline
+9 processos & 0,006355s  &  0,005824s  &  0,007481s  &  0,006553s \\ \hline
+10 processos & 0,004734s  &  0,004441s  &  0,015296s  &  0,008157s \\ \hline
+20 processos & 0,007049s  &  0,007616s  &  0,048893s  &  0,021186s \\ \hline 
+\end{tabular}
+\caption{Tabela da execução com entrada de 60 cístrons para a aplicação paralela}
+\end{table}
+
+\paragraph{} Para a primeira bateria de testes, note que a aplicação sequencial acabou sendo melhor que as execuções da aplicação paralela: enquanto a execução no ambiente MPI com apenas 1 processo culminou em ser aproximadamente 5x mais lenta que a sequencial, e a execução com 20 processos teve o pior desempenho médio.\\
+\newpage
+\begin{table}[!htb]
+\begin{tabular}{| l | l | l | l | l | p{5cm} |} 
+\hline
+  Nº processos & 1ª execução & 2ª execução & 3ª execução & Média\\ \hline
+1 processo   &	0,000270s  &    0,000319s   & 0,000279s   &  0,000289s\\ \hline
+
+\end{tabular}
+\caption{Tabela da execução com entrada de 122 cístrons para a aplicação sequencial}
+\end{table}
+
+\begin{table}[!htb]
+\begin{tabular}{| l | l | l | l | l | p{5cm} |} 
+\hline
+Nº processos & 1ª execução & 2ª execução & 3ª execução & Média\\ \hline
+1  processo & 0,000560s  &  0,000673s  &  0,000735s  &  0,000656s  \\ \hline
+2 processos & 0,001141s  &  0,001135s  &  0,001447s  & 0,001241s  \\ \hline
+4 processos & 0,006964s  &  0,006780s  &  0,007720s  &  0,007155s  \\ \hline
+8 processos & 0,004822s  &  0,006210s  &  0,005909s  &  0,005647s  \\ \hline
+16 processos & 0,009243s &  0,010715s  &  0,029486s  &  0,016481s    \\ \hline
+32 processos & 0,045284s  &  0,047188s  &  0,132972s  &  0,075148s  \\ \hline
+\end{tabular}
+\caption{Tabela da execução com entrada de 122 cístrons para a aplicação paralela}
+\end{table}
+
+\paragraph{}Para a segunda bateria de testes, note que a aplicação sequencial novamente acabou sendo melhor que as execuções da aplicação paralela:a execução sequencial obteve uma melhor média frente às execuções paralelas, onde a primeira obteve uma média aproximadamente 2x pior que a sequencial, onde a execução com 32 processos obteve o pior desempenho frente às demais.\\
+
+\begin{table}[!htb]
+\begin{tabular}{| l | l | l | l | l | p{5cm} |} 
+\hline
+  Nº processos & 1ª execução & 2ª execução & 3ª execução & Média\\ \hline
+ 1  processo & 0,001204s  &  0,001251s  &  0,001167s  &  0,001207s \\ \hline
+\end{tabular}
+\caption{Tabela da execução com entrada de 842 cístrons para a aplicação sequencial}
+\end{table}
+
+
+\begin{table}[!htb]
+\begin{tabular}{| l | l | l | l | l | p{5cm} |} 
+\hline
+Nº processos & 1ª execução & 2ª execução & 3ª execução & Média\\ \hline
+1  processo & 0,001647s  &  0,003152s  &  0,003888s  &  0,002895s  \\ \hline
+2 processos & 0,024973s  &  0,971038s  &  1,230680s  &  0,742230s   \\ \hline
+4 processos & 0,016289s  &  0,086328s  &  2,050373s  & 2,152990 s   \\ \hline
+8 processos & 0,012612s  &  0,137131s  &  0,549633s  &  0,233125s   \\ \hline
+16 processos & 0,011125s  &  0,708151s  &  2,310141s  &  1,009806s     \\ \hline
+30 processos & 0,048504s  &  0,590812s  &  1,115891s  &  0,585069s\\ \hline
+32 processos & --------s  &  --------s  &  --------s  &  --------s  \\ \hline
+120 processos & 1,816374s  &  8,354731s  &  6,058427s  &  5,409844s\\ \hline
+\end{tabular}
+\caption{Tabela da execução com entrada de 842 cístrons para a aplicação paralela}
+\end{table}
+\newpage
+
+\paragraph{} Na terceira bateria de testes, temos (novamente) que a aplicação sequencial obteve um melhor desempenho frente às execuções da aplicação paralela: o melhor caso da aplicação paralela foi na execução com apenas 1 processo, onde o tempo médio foi 2x pior que o tempo médio da execução da aplicação sequencial, enquanto o pior caso foi a execução com 120 processos, com um tempo médio de execução de 5,409844 segundos (isso é aproximadamente 4.482x pior que a aplicação sequencial). Note que por algum motivo, a execução da aplicação paralela não teve sua execução bem sucedida com 32 tarefas (não sabemos o motivo).\\
+\paragraph{}Para todos os casos de teste, percebe-se que pelo menos em uma única máquina, o desempenho da aplicação paralela no ambiente MPI foi pior que o desempenho da sequencial.\\
+
+
 
 \bibliographystyle{agsm}
 \bibliography{bibliografia}
