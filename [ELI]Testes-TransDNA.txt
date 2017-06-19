@@ -47,13 +47,36 @@ Cada bateria de execuções sofreu uma pausa de 3 minutos
 			- 1  processo: 0,001204s  |  0,001251s  |  0,001167s  |  0,001207s  |  MELHOR
 		Paralelo:		  
 			- 1  processo: 0,001647s  |  0,003152s  |  0,003888s  |  0,002895s  | +- 2x 
-			- 2 processos: 0,024973s  |  0,971038s  |  1,230680s  |  0,------s  |
-			- 4 processos: 0,016289s  |  0,086328s  |  2,050373s  |  0,------s  |
-			- 8 processos: 0,012612s  |  0,137131s  |  0,549633s  |  0,------s  |
-			-16 processos: 0,011125s  |  0,708151s  |  2,310141s  |  0,------s  |
-			-30 processos: 0,048504s  |  0,590812s  |  1,115891s  |  0,------s  |  
+			- 2 processos: 0,024973s  |  0,971038s  |  1,230680s  |  0,742230s  |
+			- 4 processos: 0,016289s  |  0,086328s  |  2,050373s  |  2,152990s  |
+			- 8 processos: 0,012612s  |  0,137131s  |  0,549633s  |  0,233125s  |
+			-16 processos: 0,011125s  |  0,708151s  |  2,310141s  |  1,009806s  |
+			-30 processos: 0,048504s  |  0,590812s  |  1,115891s  |  0,585069s  |
 			-32 processos: --------s  |  --------s  |  --------s  |  --------s  |  ERRO
 		   -120 processos: 1,816374s  |  8,354731s  |  6,058427s  |  5,409844s  |  PIOR
+
+    - Cístron de tamanho 4437
+			    #Processos |  1ª exec  |   2ª exec   |   3ª exec   |    MÉDIA    |   OBS
+		Sequencial:
+			-  1  processo: 0,004860s  |  0,007023s  |  0,005213s  |  0,005698s  | MELHOR
+		Paralelo:
+		    -  1  processo: 0,017591s  |  0,015152s  |  0,015673s  |  0,016138s  |
+			-  2 processos: 0,024995s  |  0,084425s  |  0,073754s  |  0,061058s  |
+			-  4 processos: 0,084745s  |  0,079165s  |  0,164985s  |  0,109631s  |
+			- 12 processos: 0,037773s  |  0,008040s  |  0,008510s  |  0,018107s  |
+			- 24 processos: 0,065613s  |  0,091352s  |  0,049874s  |  0,068946s  |
+			- 48 processos: 0,087321s  |  0,101885s  |  0,097877s  |  0,095694s  | PIOR
+
+    - Cístron de tamanho 7280
+			    #Processos |  1ª exec  |   2ª exec   |   3ª exec   |    MÉDIA    |   OBS
+		Sequencial:
+			- 1  processos: 0,013972s  |  0,008105s  |  0,008033s  |  0,010036s  |  MELHOR
+		Paralelo:
+			- 21 processos: 0,869893s  |  0,574401s  |  0,429978s  |  0,624757s  |
+			- 23 processos: 0,840000s  |  0,568223s  |  0,853577s  |  0,753933s  |
+			- 30 processos: 1,146455s  |  1,087207s  |  1,182422s  |  1,138694s  |
+			- 69 processos: 2,415901s  |  1,109173s  |  1,879926s  |  1,801666s  | PIOR
+			- 79 processos: 1,234773s  |  1,713105s  |  2,284012s  |  1,743963s  |
 
 - Conclusões:
 	Para uma mesma máquina, independentemente da quantidade de processos, a execução paralela nunca é superior à execução sequencial. Demais testes devem seguir em máquinas distintas e com uma cadeia consideravelmente maior.
@@ -61,22 +84,7 @@ Cada bateria de execuções sofreu uma pausa de 3 minutos
 
 ---------------------------------------------------------
 
-.:Execuções em 2 máquinas:.
-
-- Resultados
-- Conclusões:
-
-
----------------------------------------------------------
-
-.:Execuções em 3 máquinas:.
-
-- Resultados
-- Conclusões:
-
----------------------------------------------------------
-
-.:Execuções em 5 máquinas:.
+.:Execuções em 9 máquinas:.
 
 - Resultados
 - Conclusões:
