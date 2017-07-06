@@ -68,11 +68,18 @@ Saida
 
 ### Compilar e executar
 - Ir até a raíz do projeto via terminal
-- Paralelo
+- Paralelo MPI
 
         - Compilar `mpicc main.c -o dna transcription.c io.c`
         - Executar(2 processos) `mpirun -np 2 dna`
 
+- Paralelo OpenMP
+(Seguir especificações desse link http://www.openmp.org/wp-content/uploads/OpenMP-4.5-1115-CPP-web.pdf)
+
+        - Compilar `gcc -fopenmp main-omp.c transcription.c io.c -o dna-omp`
+        - Definir Quantidade de Processos `export OMP_NUM_THREADS=4`
+        - Executar `./dna-omp`
+        
 - Sequencial
 
         - Compilar(sequencial) `gcc sequencial.c -o sequencial transcription.c io.c`
