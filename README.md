@@ -1,20 +1,34 @@
 # TransDNA
-Implementação da transcrição de DNA e identificação de aminoácidos utilizando MPI
+Implementação da transcrição de DNA e identificação de aminoácidos usando paradigmas paralelos
 
-### Processo Mestre
+## MPI
+    ### Processo Mestre
 
-- Lê o arquivo de entrada com o dna
-- Encontra ponto inicial da transcrição (início do cístron)
-- Separa a string entre os processos (ela inclusive)
-- Realiza a transcrição e identifica os aminoacidos de sua parte
-- Recebe as partes dos demais processos
-- Escreve no arquivo de saida
+    - Lê o arquivo de entrada com o dna
+    - Encontra ponto inicial da transcrição (início do cístron)
+    - Separa a string entre os processos (ela inclusive)
+    - Realiza a transcrição e identifica os aminoacidos de sua parte
+    - Recebe as partes dos demais processos
+    - Escreve no arquivo de saida
 
 
-### Processos Trabalhadores 
-- Recebe parte do cístron do processo mestre
-- Realiza a transcrição e identifica os aminoacidos de sua parte
-- Envia codons RNA e aminoácidos para o processo mestre
+    ### Processos Trabalhadores 
+    - Recebe parte do cístron do processo mestre
+    - Realiza a transcrição e identifica os aminoacidos de sua parte
+    - Envia codons RNA e aminoácidos para o processo mestre
+
+## openMP
+    ### Processo
+    
+    - Lê o arquivo de entrada com o dna
+    - Encontra o ponto inicial da transcrição (início do cístron)
+    - Inicia o ambiente openMP
+    - Escreve no arquivo de saída
+    
+    
+    ### Threads
+    
+    - Realizam a transcrição e identifica os aminoacidos de sua parte
 
 ### Funções
 
