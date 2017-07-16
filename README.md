@@ -71,14 +71,20 @@ char* aminoacids(char *in, int size);
 #### Entrada
 É preciso passar uma das hélices do DNA contendo o início de um cístron
 
-OBS: A leitura procurará pelo início de um cístron, identificado após os codons ATT, ACT e ATC 
+OBS: A leitura procurará pelo início de um cístron, identificado após os codons ATT, ACT ou ATC 
 
 OBS: A cadeia pode ter qualquer tamanho, porém o cístron precisa ser múltiplo de 3
 
 OBS: Toda a cadeia antes do cístron é ignorada visto que poderá gerar uma proteína inválida
+
+Exemplos reais de DNA _http://www.cbs.dtu.dk/services/NetGene2/fasta.php_
  
     GTAGTAGTAATTAAAAACGGCGTAGCA
     
+Nesse exemplo, a substring do índice 0 ao 8 é descartada; a substring do índice 9 ao 11 também é descartada pois indica o fim do cístron. Desse modo apenas a substring a partir do índice 12 é considerada para a aplicação
+
+   _GTAGTAGTA_ __ATT__ AAAAACGGCGTAGCA
+
 
 #### Saida
 O arquivo de saída é organizado em três colunas que facilitam a apuração e identificação de erros
@@ -95,18 +101,18 @@ O arquivo de saída é organizado em três colunas que facilitam a apuração e 
 ## Compilar e executar
 Ir até a raíz do projeto via terminal
 
-- Paralelo MPI
+    Paralelo MPI
 
         - Compilar `mpicc main-mpi.c transcription.c io.c -o dna-mpi`
         - Executar(2 processos) `mpirun -np 2 dna-mpi`
 
-- Paralelo OpenMP
+    Paralelo OpenMP
 
         - Compilar `gcc -fopenmp main-omp.c transcription.c io.c -o dna-omp`
         - Definir Quantidade de Threads Padrão `export OMP_NUM_THREADS=4`
         - Executar `./dna-omp`
         
-- Sequencial
+    Sequencial
 
         - Compilar `gcc main-seq.c transcription.c io.c -o dna-seq`
         - Executar `./dna-seq`
