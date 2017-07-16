@@ -1,6 +1,6 @@
 /* SPMD Single Program Multiple Data
- * TransDNA com openMP pica das galáxias
- */
+ * TransDNA com openMP
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,37 +11,37 @@
 #include "io.h"
 
 // Constantes
-#define MESTRE 0
 #define TAMANHO_CODON 3
-#define CODONS 10
-#define CODONS_POR_PROCESSO 20
-#define CADEIA_DNA 100
-#define TRANSCRICAO 200
-#define AMINOACIDOS 300
+#define NUM_THREADS 4 // Constante para numero Threads de ressalva
 
 int main(int argc, char** argv) {
 
     // Variáveis comuns a todas as threads
     double tIni, tFim, tExecucao;           // Controladoras de tempo
-    int qtThreads = omp_get_max_threads();  // Numero total de threads (definida pelo usuário no terminal)
-    int qtCodons;                           // Quantidade de Codons que a cadeia de DNA original possui
     int codonsPorThread;                    // Quantidade de Codons que cada Thread tem direito
     char** codonsDNA;                       // Vetor de Codons do DNA
     char** codonsRNA;                       // Vetor de Codons do RNA
     char** aminoacidos;                     // Vetor de Aminoácidos
+    int qtCodons;                           // Quantidade de Codons que a cadeia de DNA original possui
+
+    /*
+     * TODO Descomentar esse bloco caso o `export` padrão não funcione como descrito no README
+     * int qtThreads = NUM_THREADS;            // Numero total de threads (definida pelo usuário no terminal)
+     * omp_set_num_threads(NUM_THREADS);
+     */
+    int qtThreads = omp_get_max_threads(); // TODO Comentar essa declaração caso o `export` padrão não funcione como descrito no README
 
     tIni = omp_get_wtime(); // Pega o tempo de início
     // Lê a cadeia do arquivo de entrada e encontra o ponto inicial para transcrição
-    char *cadeiaDNAoriginal = ler("dna2.txt"); // TODO não esquecer de testar com demais arquivos de entrada
+    char *cadeiaDNAoriginal = ler("dna7.txt"); // TODO Alterar para ler o arquivo DNA desejado
     printf("Processo: LEITURA NO ARQUIVO CONCLUIDA ");
-    char *cadeiaDNA = getCistron(cadeiaDNAoriginal); // TODO alterar a função getCistron para printar no novo formato
+    char *cadeiaDNA = getCistron(cadeiaDNAoriginal);
     int tamanhoCadeiaDNA = strlen(cadeiaDNA);
 
-    // TODO Verificar se compensa começar a área paralela a partir desse ponto
     // Particiona a cadeia original em codons (substrings de tamanho 3)
     codonsDNA = split(cadeiaDNA, TAMANHO_CODON);
     qtCodons = tamanhoCadeiaDNA / TAMANHO_CODON;
-    // TODO Redistribuir a quantidade de codons entre threads caso a qtCodons não seja igual entre os processos
+
     codonsPorThread = qtCodons/qtThreads;
     printf("\nProcesso: TAMANHO DA CADEIA LIDA = %lu", strlen(cadeiaDNAoriginal));
     printf("\nProcesso: TAMANHO DO CISTRON = %i", tamanhoCadeiaDNA);
@@ -54,7 +54,6 @@ int main(int argc, char** argv) {
     codonsRNA = malloc(qtCodons * sizeof(char *));
     aminoacidos = malloc(qtCodons * sizeof(char *));
 
-    // TODO Vale a pena colocar um timer somente para essa região paralela???
     // Início da seção paralela (threads)
     #pragma omp parallel
     {
@@ -63,11 +62,15 @@ int main(int argc, char** argv) {
         int i;                               // Iterador padrão
         int inicioAreaThread = codonsPorThread * idThread;
         int fimAreaThread = codonsPorThread * (idThread + 1);
+        
+        if((idThread == qtThreads-1) && (qtCodons % qtThreads != 0)){ // Número de threads não divide o número de códons
+        	fimAreaThread = fimAreaThread + (qtCodons % qtThreads);
+        }
 
-        // Informa o usuário o estado da aplicação
+        // Informa ao usuário o estado da aplicação
         printf("\nThread %i: INICIOU ", idThread);
-        printf("\nT #%i INI: %i", idThread, inicioAreaThread);
-        printf("\nT #%i FIM: %i", idThread, fimAreaThread);
+        printf("\nThread %i: CODON INI %i", idThread, inicioAreaThread);
+        printf("\nThread %i: CODON FIM %i", idThread, fimAreaThread-1);
 
         // Executa a sua parte específica e escreve os resultados na variável compartilhada entre as threads
         for (i = inicioAreaThread; i < fimAreaThread; i++) {
@@ -84,9 +87,9 @@ int main(int argc, char** argv) {
     char *resultadoArquivo = malloc(tamanhoCadeiaDNA * 7 * sizeof(char));
     strcat(resultadoArquivo, ".:RESULTADOS:.\nDNA   RNA  AMINO");
     printf(COR_AZUL "\n     .:RESULTADOS:. " COR_PADRAO);
-    printf(COR_AZUL "\n   DNA   RNA  AMINO" COR_PADRAO);
+    printf(COR_AZUL "\n   DNA   RNA  AMINO " COR_PADRAO);
     for (i = 0; i < qtCodons; i++) {
-        printf(COR_AZUL "\n   %s   %s   %s" COR_PADRAO, codonsDNA[i], codonsRNA[i], aminoacidos[i]);
+        printf(COR_AZUL "\n   %s   %s   %s " COR_PADRAO, codonsDNA[i], codonsRNA[i], aminoacidos[i]);
         char *novaLinha = malloc(TAMANHO_CODON * 7 * sizeof(char));
         initialize(novaLinha, TAMANHO_CODON * 7);
         strcat(novaLinha, "\n");
@@ -109,7 +112,6 @@ int main(int argc, char** argv) {
     tFim = omp_get_wtime(); // Pega o tempo de fim
     tExecucao = tFim - tIni;
     printf(COR_VERDE "\nTempo total: %fs\n" COR_PADRAO, tExecucao);
-
 
     return 0;
 }

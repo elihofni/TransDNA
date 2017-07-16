@@ -2,7 +2,7 @@
 Implementação da transcrição de DNA e identificação de aminoácidos usando paradigmas paralelos
 
 ## MPI
-    ### Processo Mestre
+    Processo Mestre
 
     - Lê o arquivo de entrada com o dna
     - Encontra ponto inicial da transcrição (início do cístron)
@@ -12,13 +12,14 @@ Implementação da transcrição de DNA e identificação de aminoácidos usando
     - Escreve no arquivo de saida
 
 
-    ### Processos Trabalhadores 
+    Processos Trabalhadores
+     
     - Recebe parte do cístron do processo mestre
     - Realiza a transcrição e identifica os aminoacidos de sua parte
     - Envia codons RNA e aminoácidos para o processo mestre
 
 ## openMP
-    ### Processo
+    Processo
     
     - Lê o arquivo de entrada com o dna
     - Encontra o ponto inicial da transcrição (início do cístron)
@@ -26,11 +27,11 @@ Implementação da transcrição de DNA e identificação de aminoácidos usando
     - Escreve no arquivo de saída
     
     
-    ### Threads
+    Threads
     
-    - Realizam a transcrição e identifica os aminoacidos de sua parte
+    - Realizam a transcrição e identificação dos aminoacidos de sua parte
 
-### Funções
+## Funções auxiliares implementadas
 
 ```C
 /*
@@ -66,35 +67,46 @@ char* transcription(char *chain, int size);
 char* aminoacids(char *in, int size);
 ```
 
-### Exemplo de arquivos
-Entrada
--
-    DNA: ATTAAAAACGGCGTAGCA
-    DNA: GTAGTAGTAATTAAAAACGGCGTAGCA
+## Exemplos de arquivos
+#### Entrada
+É preciso passar uma das hélices do DNA contendo o início de um cístron
+
+OBS: A leitura procurará pelo início de um cístron, identificado após os codons ATT, ACT e ATC 
+
 OBS: A cadeia pode ter qualquer tamanho, porém o cístron precisa ser múltiplo de 3
-OBS: A leitura procurará pelo início de um cístron, identificado pelos codons ATT, ACT e ATC. Toda a cadeia antes do cístron é ignorada visto que poderá gerar uma proteína inválida
 
-Saida
--      
-     CODONS DNA: AAA AAC GGC GTA GCA                        
-     CODONS RNA: UUU UUG CCG CAU CGU
-    AMINOACIDOS: Phe Leu Pro His Arg
+OBS: Toda a cadeia antes do cístron é ignorada visto que poderá gerar uma proteína inválida
+ 
+    GTAGTAGTAATTAAAAACGGCGTAGCA
+    
 
-### Compilar e executar
-- Ir até a raíz do projeto via terminal
+#### Saida
+O arquivo de saída é organizado em três colunas que facilitam a apuração e identificação de erros
+
+        .:RESULTADOS:.
+      DNA       RNA     AMINO
+      AAA       UUU      Phe
+      AAC       UUG      Leu
+      GCG       CCG      Pro
+      GTA       CAU      His
+      GCA       CGU      Arg
+
+
+## Compilar e executar
+Ir até a raíz do projeto via terminal
+
 - Paralelo MPI
 
-        - Compilar `mpicc main.c -o dna transcription.c io.c`
-        - Executar(2 processos) `mpirun -np 2 dna`
+        - Compilar `mpicc main-mpi.c transcription.c io.c -o dna-mpi`
+        - Executar(2 processos) `mpirun -np 2 dna-mpi`
 
 - Paralelo OpenMP
-(Seguir especificações desse link http://www.openmp.org/wp-content/uploads/OpenMP-4.5-1115-CPP-web.pdf)
 
         - Compilar `gcc -fopenmp main-omp.c transcription.c io.c -o dna-omp`
-        - Definir Quantidade de Processos `export OMP_NUM_THREADS=4`
+        - Definir Quantidade de Threads Padrão `export OMP_NUM_THREADS=4`
         - Executar `./dna-omp`
         
 - Sequencial
 
-        - Compilar(sequencial) `gcc sequencial.c -o sequencial transcription.c io.c`
-        - Executar `./sequencial`
+        - Compilar `gcc main-seq.c transcription.c io.c -o dna-seq`
+        - Executar `./dna-seq`
